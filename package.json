@@ -1,0 +1,21 @@
+{
+  "name": "talentsphere",
+  "version": "1.1.0",
+  "private": true,
+  "scripts": {
+    "setup": "npm --prefix backend ci",
+    "dev": "npm --prefix backend run dev",
+    "start": "npm --prefix backend start",
+    "seed": "npm --prefix backend run seed",
+    "build": "node scripts/check.js",
+    "lint": "node scripts/check.js",
+    "test": "npm --prefix backend test",
+    "test:browser": "node scripts/browser-test.js",
+    "create-admin": "npm --prefix backend run create-admin",
+    "payments:reconcile": "npm --prefix backend run payments:reconcile",
+    "seed:activity": "node backend/src/db/seed-activity.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.0"
+  }
+}

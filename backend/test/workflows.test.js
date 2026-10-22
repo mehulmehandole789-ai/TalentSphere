@@ -1,0 +1,155 @@
+const {test,after}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'talentsphere-test-'));
+process.env.DATABASE_PATH=path.join(dir,'test.db');
+process.env.JWT_SECRET='isolated-test-secret-that-is-at-least-48-characters';
+const app=require('../src/index'),db=require('../src/db');
+// .env may contain real SMTP credentials; this suite uses captured mail only.
+delete process.env.SMTP_HOST;delete process.env.SMTP_FROM;
+const mockMail=require('./mock-mail').installMockMail(app);
+let server,base;
+const ready=new Promise(resolve=>{server=app.listen(0,'127.0.0.1',()=>{base=`http://127.0.0.1:${server.address().port}/api`;resolve();});});
+after(async()=>{await new Promise(resolve=>server.close(resolve));db.close();fs.rmSync(dir,{recursive:true,force:true});});
+async function request(route,method='GET',body,token){await ready;const res=await fetch(base+route,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},body:body===undefined?undefined:JSON.stringify(body)});return {status:res.status,data:await res.json()};}
+let artist,otherArtist,organizer,outsider,adminToken,profile,otherProfile,event,booking,application,collab;
+test('registration, password hashing, login, persistent identity and admin bypass removal',async()=>{
+ for(const [name,role] of [['Artist','artist'],['OtherArtist','artist'],['Organizer','organizer'],['Outsider','organizer']]){
+ const res=await request('/auth/register','POST',{name,email:name+'@example.test',password:'Testing123!',role,location:'Pune, IN',category:'Singers'});assert.equal(res.status,201);assert.equal(res.data.token,undefined);
+ assert.equal((await request('/auth/verify-email','POST',{email:name+'@example.test',code:mockMail.latestCode(name+'@example.test')})).status,200);
+ const logged=await request('/auth/login','POST',{email:name+'@example.test',password:'Testing123!'});assert.equal(logged.status,200);
+ ({Artist:v=>artist=v,OtherArtist:v=>otherArtist=v,Organizer:v=>organizer=v,Outsider:v=>outsider=v}[name])(logged.data);
+ }
+ assert.equal((await request('/auth/register','POST',{name:'Admin',email:'admin@example.test',password:'Testing123!',role:'admin'})).status,400);
+ assert.equal((await request('/auth/login','POST',{email:'artist@example.test',password:'bad'})).status,401);
+ assert.equal((await request('/auth/login','POST',{email:' ARTIST@example.test ',password:'Testing123!'})).status,200);
+ profile=(await request('/auth/me','GET',undefined,artist.token)).data.artistProfile;
+ otherProfile=(await request('/auth/me','GET',undefined,otherArtist.token)).data.artistProfile;
+ assert.equal(profile.rating,0);assert.ok(!profile.email);
+ assert.ok(db.prepare('SELECT passwordHash FROM users WHERE id=?').get(artist.user.id).passwordHash.startsWith('$2'));
+ assert.equal((await request('/auth/admin-demo-login','POST',{})).status,404);
+ db.prepare("INSERT INTO users(id,email,passwordHash,name,role,emailVerified) VALUES('test-admin','admin@example.test','unused','Admin','admin',1)").run();
+ adminToken=require('../src/middleware/auth').signToken({id:'test-admin',role:'admin'});
+});
+test('profile validation, search, media storage, permissions and persistence',async()=>{
+ assert.equal((await request('/artists/me','PATCH',{price:-5},artist.token)).status,400);
+ assert.equal((await request('/artists/me','PATCH',{bio:'Unauthorized'},organizer.token)).status,403);
+ const res=await request('/artists/me','PATCH',{bio:'Live acoustic sets',skills:['Guitar'],price:12000,exp:3,location:'Delhi, IN'},artist.token);assert.equal(res.status,200);
+ const found=await request('/artists?q=Guitar&location=Delhi%2C%20IN');assert.equal(found.data.length,1);
+ assert.equal((await request('/artists/me/portfolio','POST',{data:'data:image/png;base64,AAAA'},artist.token)).status,400);
+ const data='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aO8sAAAAASUVORK5CYII=';
+ assert.equal((await request('/artists/me/portfolio','POST',{data},artist.token)).status,201);
+ assert.equal((await request('/artists/'+profile.id)).data.artist.media.length,1);
+ assert.equal((await request('/artists/me/portfolio/0','DELETE',undefined,artist.token)).status,200);
+ assert.equal(db.prepare('SELECT bio FROM artist_profiles WHERE id=?').get(profile.id).bio,'Live acoustic sets');
+});
+test('portfolio edits, uploads and removals reject another artist identity and preserve both profiles',async()=>{
+ const before=db.prepare('SELECT * FROM artist_profiles WHERE id IN (?,?) ORDER BY id').all(profile.id,otherProfile.id);
+ assert.equal((await request('/artists/me','PATCH',{profileId:otherProfile.id,bio:'Changed without permission'},artist.token)).status,403);
+ assert.equal((await request('/artists/me','PATCH',{artistId:otherProfile.id,bio:'Wrong artist'},artist.token)).status,403);
+ assert.equal((await request('/artists/me','PATCH',{userId:otherArtist.user.id,bio:'Wrong owner'},artist.token)).status,403);
+ const image='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aO8sAAAAASUVORK5CYII=';
+ assert.equal((await request('/artists/me/portfolio','POST',{profileId:otherProfile.id,data:image},artist.token)).status,403);
+ assert.equal((await request('/artists/me/portfolio/0?profileId='+otherProfile.id,'DELETE',undefined,artist.token)).status,403);
+ assert.equal((await request('/artists/me/portfolio','POST',{data:image})).status,401);
+ assert.equal((await request('/artists/me/portfolio/0','DELETE')).status,401);
+ assert.deepEqual(db.prepare('SELECT * FROM artist_profiles WHERE id IN (?,?) ORDER BY id').all(profile.id,otherProfile.id),before);
+ assert.equal((await request('/artists/me','PATCH',{profileId:profile.id,bio:'Owner edit'},artist.token)).status,200);
+ assert.equal((await request('/artists/me/portfolio','POST',{profileId:profile.id,data:image},artist.token)).status,201);
+ assert.equal((await request('/artists/me/portfolio/0?profileId='+profile.id,'DELETE',undefined,artist.token)).status,200);
+ assert.deepEqual(db.prepare('SELECT * FROM artist_profiles WHERE id=?').get(otherProfile.id),before.find(p=>p.id===otherProfile.id));
+});
+test('booking privacy, validation, participant transitions and no simulated payment',async()=>{
+ const payload={artistId:profile.id,eventName:'Annual performance',date:'2099-11-20',duration:'2 hours',location:'Delhi'};
+ assert.equal((await request('/bookings','POST',payload,artist.token)).status,403);
+ assert.equal((await request('/bookings','POST',{...payload,date:'2020-01-01'},organizer.token)).status,400);
+ booking=(await request('/bookings','POST',payload,organizer.token)).data;
+ assert.equal(booking.status,'Pending');assert.equal(booking.platformFee,0);
+ assert.equal((await request('/bookings','POST',payload,organizer.token)).status,409);
+ assert.equal((await request('/bookings/'+booking.id,'GET',undefined,outsider.token)).status,403);
+ assert.equal((await request('/bookings','GET',undefined,outsider.token)).data.length,0);
+ assert.equal((await request('/bookings/'+booking.id+'/status','PATCH',{status:'Accepted'},organizer.token)).status,409);
+ assert.equal((await request('/bookings/'+booking.id+'/status','PATCH',{status:'Accepted'},otherArtist.token)).status,403);
+ assert.equal((await request('/bookings/'+booking.id+'/status','PATCH',{status:'Accepted'},artist.token)).status,200);
+ assert.equal((await request('/bookings/'+booking.id+'/status','PATCH',{status:'Accepted'},artist.token)).status,409);
+ assert.equal((await request('/bookings/'+booking.id+'/status','PATCH',{status:'Confirmed'},organizer.token)).status,409);
+ assert.equal((await request('/bookings/'+booking.id,'GET',undefined,organizer.token)).data.status,'Accepted');
+ assert.equal((await request('/bookings/'+booking.id+'/status','PATCH',{status:'Completed'},organizer.token)).status,409);
+ assert.equal((await request('/bookings/'+booking.id+'/pay','POST',{},organizer.token)).status,404);
+ assert.equal((await request('/bookings/'+booking.id+'/status','PATCH',{status:'Cancelled'},organizer.token)).status,200);
+ assert.equal((await request('/bookings/'+booking.id+'/status','PATCH',{status:'Confirmed'},organizer.token)).status,409);
+});
+test('event applications privacy, ownership, duplicates and irreversible responses',async()=>{
+ const payload={name:'Acoustic night',description:'An evening of original music',category:'Music Festival',date:'2099-12-01',deadline:'2099-11-01',time:'18:00',location:'Delhi',venue:'Studio',talent:'Singers',numArtists:2,budget:'20000'};
+ assert.equal((await request('/events','POST',payload,artist.token)).status,403);
+ const result=await request('/events','POST',payload,organizer.token);assert.equal(result.status,201);event=result.data;
+ assert.equal(event.description,payload.description);
+ application=(await request('/applications','POST',{eventId:event.id,fee:10000,message:'Available'},artist.token)).data;
+ assert.equal((await request('/applications','POST',{eventId:event.id},artist.token)).status,409);
+ assert.deepEqual((await request('/events/'+event.id)).data.applications,[]);
+ assert.equal((await request('/events/'+event.id,'GET',undefined,organizer.token)).data.applications.length,1);
+ assert.equal((await request('/applications/'+application.id,'PATCH',{status:'Accepted'},artist.token)).status,403);
+ assert.equal((await request('/applications/'+application.id,'PATCH',{status:'Accepted'},outsider.token)).status,403);
+ assert.equal((await request('/applications/'+application.id,'PATCH',{status:'Accepted'},organizer.token)).status,200);
+ assert.equal((await request('/applications/'+application.id,'PATCH',{status:'Rejected'},organizer.token)).status,409);
+});
+test('collaboration recipient authorization and notifications ownership',async()=>{
+ collab=(await request('/collaborations','POST',{toId:otherProfile.id,message:'Let us create a set'},artist.token)).data;
+ assert.equal((await request('/collaborations','POST',{toId:otherProfile.id},artist.token)).status,409);
+ assert.equal((await request('/collaborations/'+collab.id,'PATCH',{status:'Accepted'},artist.token)).status,403);
+ assert.equal((await request('/collaborations/'+collab.id,'PATCH',{status:'Declined'},otherArtist.token)).status,200);
+ assert.equal((await request('/collaborations/'+collab.id,'PATCH',{status:'Accepted'},otherArtist.token)).status,409);
+ const notices=(await request('/notifications','GET',undefined,otherArtist.token)).data;assert.ok(notices.length);
+ assert.equal((await request('/notifications/'+notices[0].id+'/read','PATCH',{},artist.token)).status,404);
+ assert.equal((await request('/notifications/read-all','PATCH',{},otherArtist.token)).status,200);
+});
+test('admin protection, verification, suspension revokes sessions, restore and API errors',async()=>{
+ assert.equal((await request('/admin/users')).status,401);
+ assert.equal((await request('/admin/users','GET',undefined,artist.token)).status,403);
+ assert.equal((await request('/admin/artists/'+profile.id+'/verify','PATCH',{},adminToken)).data.verified,true);
+ assert.equal((await request('/admin/users/'+artist.user.id+'/suspension','PATCH',{},adminToken)).data.suspended,true);
+ assert.equal((await request('/auth/me','GET',undefined,artist.token)).status,401);
+ assert.equal((await request('/auth/login','POST',{email:'artist@example.test',password:'Testing123!'})).status,403);
+ assert.equal((await request('/admin/users/'+artist.user.id+'/suspension','PATCH',{},adminToken)).data.suspended,false);
+ assert.equal((await request('/auth/me','GET',undefined,artist.token)).status,401);
+ artist.token=(await request('/auth/login','POST',{email:'artist@example.test',password:'Testing123!'})).data.token;
+ assert.equal((await request('/artists/missing')).status,404);
+ assert.equal((await request('/missing')).status,404);
+ assert.equal((await request('/artists/me','PATCH',{bio:'<script>alert(1)</script>'},artist.token)).status,400);
+});
+test('SMTP reset tokens are hashed, single use, expire and revoke existing sessions; logout revokes tokens',async()=>{
+ delete app.locals.mailTransport;
+ assert.equal((await request('/auth/forgot-password','POST',{email:'artist@example.test'})).status,503);
+ let message;app.locals.mailTransport={sendMail:async payload=>{message=payload;}};
+ assert.equal((await request('/auth/forgot-password','POST',{email:'artist@example.test'})).status,200);
+ const token=message.text.match(/reset\/([a-f0-9]{64})/)[1];
+ assert.notEqual(db.prepare('SELECT tokenHash FROM password_resets').get().tokenHash,token);
+ assert.equal((await request('/auth/reset-password','POST',{token,password:'NewTesting123!'})).status,200);
+ assert.equal((await request('/auth/me','GET',undefined,artist.token)).status,401);
+ assert.equal((await request('/auth/reset-password','POST',{token,password:'AnotherTesting123!'})).status,400);
+ artist.token=(await request('/auth/login','POST',{email:'artist@example.test',password:'NewTesting123!'})).data.token;
+ assert.ok(artist.token);
+ assert.equal((await request('/auth/logout','POST',{},artist.token)).status,200);
+ assert.equal((await request('/auth/me','GET',undefined,artist.token)).status,401);
+ artist.token=(await request('/auth/login','POST',{email:'artist@example.test',password:'NewTesting123!'})).data.token;
+ await request('/auth/forgot-password','POST',{email:'artist@example.test'});
+ const expired=message.text.match(/reset\/([a-f0-9]{64})/)[1];db.prepare('UPDATE password_resets SET expiresAt=0').run();
+ assert.equal((await request('/auth/reset-password','POST',{token:expired,password:'NewTesting456!'})).status,400);
+ app.locals.mailTransport={sendMail:async()=>{throw new Error('offline');}};
+ assert.equal((await request('/auth/forgot-password','POST',{email:'artist@example.test'})).status,502);
+ delete app.locals.mailTransport;
+});
+test('malformed input, missing IDs and authentication rate limiting',async()=>{
+ assert.equal((await request('/auth/login','POST',{email:{bad:true},password:'x'})).status,400);
+ assert.equal((await request('/artists?q[]=bad')).status,400);
+ assert.equal((await request('/bookings/missing','GET',undefined,organizer.token)).status,404);
+ assert.equal((await request('/artists/me','PATCH',{skills:[123]},artist.token)).status,400);
+ let result;for(let i=0;i<31;i++)result=await request('/auth/login','POST',{email:'unknown@example.test',password:'bad'});
+ assert.equal(result.status,429);
+});
+test('seed never changes an existing database and stored records survive reopening',()=>{
+ const {spawnSync}=require('node:child_process');
+ const before=db.prepare('SELECT COUNT(*) n FROM users').get().n;
+ const result=spawnSync(process.execPath,[path.join(__dirname,'../src/db/seed.js')],{env:process.env,encoding:'utf8'});assert.equal(result.status,0);assert.match(result.stdout,/Seed skipped/);assert.equal(db.prepare('SELECT COUNT(*) n FROM users').get().n,before);
+ const read=spawnSync(process.execPath,['-e',"const db=require('./src/db');console.log(db.prepare('SELECT COUNT(*) n FROM bookings').get().n);db.close();"],{cwd:path.join(__dirname,'..'),env:process.env,encoding:'utf8'});assert.equal(read.status,0);assert.equal(Number(read.stdout.trim()),1);
+});

@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Discover independent artists, book talent for your events, and manage creative collaborations with TalentSphere.">
+<meta name="theme-color" content="#173f36">
+<title>TalentSphere — Discover Talent. Connect. Collaborate. Create.</title>
+<style>
+:root{
+  --ink:#14121a;
+  --ink-soft:#1e1a28;
+  --ink-softer:#282239;
+  --paper:#f7f3ec;
+  --paper-dim:#efe7d8;
+  --amber:#f2a93b;
+  --amber-dim:#8b5b13;
+  --coral:#b74738;
+  --violet:#6b4fa0;
+  --violet-deep:#3d2c5b;
+  --green:#287447;
+  --text-ink:#f4efe4;
+  --text-ink-mute:#aea4c4;
+  --text-paper:#1c1720;
+  --text-paper-mute:#6c6473;
+  --line-ink:rgba(244,239,228,.14);
+  --line-paper:rgba(28,23,32,.13);
+  --radius-lg:22px;
+  --radius-md:14px;
+  --radius-sm:8px;
+  --shadow-lift:0 20px 50px -20px rgba(20,18,26,.5);
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', 'Segoe UI', sans-serif;
+  --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--paper);color:var(--text-paper);font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+h1,h2,h3,h4{font-family:var(--font-display);margin:0;letter-spacing:-.01em;}
+p{margin:0;}
+.wrap{max-width:1240px;margin:0 auto;padding:0 32px;}
+@media(max-width:720px){.wrap{padding:0 18px;}}
+
+/* ---------- utility ---------- */
+.eyebrow{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral);font-weight:500;}
+.eyebrow.on-ink{color:var(--amber);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:999px;padding:13px 26px;font-weight:600;font-size:14.5px;transition:transform .15s ease, box-shadow .15s ease, background .15s ease;white-space:nowrap;}
+.btn:active{transform:scale(.97);}
+.btn-amber{background:var(--amber);color:var(--ink);}
+.btn-amber:hover{background:#ffbf5c;box-shadow:0 10px 24px -8px rgba(242,169,59,.6);}
+.btn-outline-ink{background:transparent;color:var(--text-ink);border:1.5px solid var(--line-ink);}
+.btn-outline-ink:hover{border-color:var(--amber);color:var(--amber);}
+.btn-outline-paper{background:transparent;color:var(--text-paper);border:1.5px solid var(--line-paper);}
+.btn-outline-paper:hover{border-color:var(--coral);color:var(--coral);}
+.btn-coral{background:var(--coral);color:#fff;}
+.btn-coral:hover{background:#f16f5e;box-shadow:0 10px 24px -8px rgba(232,92,74,.55);}
+.btn-dark{background:var(--ink);color:var(--text-ink);}
+.btn-dark:hover{background:var(--ink-soft);}
+.btn-sm{padding:9px 18px;font-size:13px;}
+.btn-block{width:100%;}
+.btn-ghost-danger{background:transparent;color:#c24a3e;border:1.5px solid rgba(194,74,62,.35);}
+.btn-ghost-danger:hover{background:rgba(194,74,62,.08);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:5px 11px;border-radius:999px;font-weight:500;}
+.pill-amber{background:rgba(242,169,59,.16);color:var(--amber-dim);}
+.pill-green{background:rgba(95,174,125,.15);color:#3d7d58;}
+.pill-coral{background:rgba(232,92,74,.13);color:var(--coral);}
+.pill-violet{background:rgba(107,79,160,.13);color:var(--violet);}
+.pill-muted{background:rgba(28,23,32,.06);color:var(--text-paper-mute);}
+
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:600;color:#fff;flex-shrink:0;}
+
+/* ---------- ticket / stub motif ---------- */
+.stub{position:relative;background:var(--paper);border-radius:var(--radius-lg);border:1.5px solid var(--line-paper);overflow:hidden;}
+.stub::after{content:"";position:absolute;left:0;right:0;top:var(--perf,132px);height:0;border-top:2px dashed rgba(28,23,32,.16);}
+.stub .stub-notch{position:absolute;top:calc(var(--perf,132px) - 9px);width:18px;height:18px;border-radius:50%;background:var(--stub-bg,var(--paper));}
+.stub .stub-notch.left{left:-9px;}
+.stub .stub-notch.right{right:-9px;}
+
+/* ---------- top nav ---------- */
+#topnav{position:sticky;top:0;z-index:60;background:rgba(20,18,26,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-ink);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:72px;color:var(--text-ink);}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--text-ink);}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 5px rgba(242,169,59,.18);}
+.navlinks{display:flex;align-items:center;gap:30px;}
+.navlinks a,.navlinks button.navlink{background:none;border:none;color:var(--text-ink-mute);font-size:14px;font-weight:500;padding:6px 0;position:relative;}
+.navlinks a:hover,.navlinks button.navlink:hover,.navlinks a.active,.navlinks button.navlink.active{color:var(--text-ink);}
+.navlinks a.active::after,.navlinks button.navlink.active::after{content:"";position:absolute;left:0;right:0;bottom:-24px;height:2px;background:var(--amber);}
+.navcta{display:flex;align-items:center;gap:12px;}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:var(--ink-soft);border:1px solid var(--line-ink);display:flex;align-items:center;justify-content:center;color:var(--text-ink-mute);position:relative;font-size:16px;}
+.icon-btn:hover{color:var(--amber);border-color:var(--amber);}
+.badge-dot{position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--coral);border:2px solid var(--ink);}
+.menu-toggle{display:none;background:none;border:none;color:var(--text-ink);font-size:22px;}
+@media(max-width:920px){
+  .navlinks{position:fixed;top:72px;left:0;right:0;background:var(--ink);flex-direction:column;align-items:flex-start;padding:18px 24px 24px;gap:16px;border-bottom:1px solid var(--line-ink);transform:translateY(-8px);opacity:0;pointer-events:none;transition:.18s ease;}
+  .navlinks.open{transform:translateY(0);opacity:1;pointer-events:auto;}
+  .navlinks a.active::after,.navlinks button.navlink.active::after{display:none;}
+  .menu-toggle{display:block;}
+}
+
+/* ---------- hero ---------- */
+.hero{position:relative;background:radial-gradient(120% 140% at 15% 0%, #26203a 0%, var(--ink) 55%);color:var(--text-ink);padding:96px 0 120px;overflow:hidden;}
+.hero-glow{position:absolute;top:-160px;right:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(242,169,59,.35),transparent 70%);filter:blur(10px);}
+.hero-glow.two{top:220px;left:-160px;width:420px;height:420px;background:radial-gradient(circle,rgba(232,92,74,.28),transparent 70%);}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;}
+@media(max-width:980px){.hero-grid{grid-template-columns:1fr;}}
+.marquee-row{display:flex;gap:8px;align-items:center;margin-bottom:22px;}
+.marquee-bulb{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber);}
+.hero h1{font-size:clamp(38px,5.4vw,64px);line-height:1.03;font-weight:700;margin:0 0 22px;}
+.hero h1 em{font-style:normal;color:var(--amber);}
+.hero p.lead{font-size:18px;line-height:1.6;color:var(--text-ink-mute);max-width:520px;margin-bottom:34px;}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:40px;}
+.hero-stats{display:flex;gap:36px;flex-wrap:wrap;}
+.hero-stat b{display:block;font-family:var(--font-display);font-size:26px;color:var(--text-ink);}
+.hero-stat span{font-size:12.5px;color:var(--text-ink-mute);font-family:var(--font-mono);letter-spacing:.04em;}
+
+.hero-card-stack{position:relative;height:460px;}
+.floatcard{position:absolute;width:230px;background:var(--paper);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-lift);}
+.floatcard .fc-top{display:flex;gap:10px;align-items:center;margin-bottom:10px;}
+.floatcard .fc-name{font-weight:700;font-size:14.5px;}
+.floatcard .fc-cat{font-size:12px;color:var(--text-paper-mute);}
+.floatcard .fc-strip{height:64px;border-radius:10px;margin-bottom:10px;}
+.fc1{top:0;left:6%;transform:rotate(-6deg);}
+.fc2{top:120px;right:0;transform:rotate(5deg);z-index:2;}
+.fc3{bottom:0;left:16%;transform:rotate(-3deg);}
+@media(max-width:980px){.hero-card-stack{height:340px;margin-top:20px;}.floatcard{width:180px;}}
+@media(max-width:560px){.hero-card-stack{display:none;}}
+
+/* ---------- sections ---------- */
+section{padding:88px 0;}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:42px;flex-wrap:wrap;}
+.section-head h2{font-size:clamp(26px,3.4vw,38px);}
+.section-sub{color:var(--text-paper-mute);font-size:15px;max-width:460px;margin-top:10px;}
+.section-dark{background:var(--ink);color:var(--text-ink);}
+.section-dark .section-sub{color:var(--text-ink-mute);}
+
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+@media(max-width:900px){.cat-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.cat-grid{grid-template-columns:repeat(2,1fr);}}
+.cat-card{background:#fff;border:1.5px solid var(--line-paper);border-radius:var(--radius-md);padding:22px 18px;text-align:left;transition:.15s;display:flex;flex-direction:column;gap:10px;}
+.cat-card:hover{border-color:var(--coral);transform:translateY(-3px);box-shadow:var(--shadow-lift);}
+.ico{display:inline-block;vertical-align:-0.16em;flex-shrink:0;}
+.cat-card .ic{font-size:26px;}
+.cat-card b{font-size:15px;}
+.cat-card span{font-size:12.5px;color:var(--text-paper-mute);}
+
+.card-row{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+@media(max-width:1080px){.card-row{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.card-row{grid-template-columns:1fr;}}
+.card-row.cols3{grid-template-columns:repeat(3,1fr);}
+@media(max-width:1080px){.card-row.cols3{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.card-row.cols3{grid-template-columns:1fr;}}
+
+/* artist card */
+.artist-card{background:#fff;border:1.5px solid var(--line-paper);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;transition:.18s;}
+.artist-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lift);border-color:transparent;}
+.ac-cover{height:120px;position:relative;}
+.ac-avatar{width:66px;height:66px;font-size:22px;border:4px solid #fff;position:absolute;bottom:-33px;left:18px;box-shadow:0 4px 10px rgba(0,0,0,.15);}
+.ac-body{padding:42px 18px 18px;}
+.ac-name-row{display:flex;align-items:center;gap:6px;}
+.ac-name{font-weight:700;font-size:16.5px;font-family:var(--font-display);}
+.verified{color:#3d8cf2;font-size:13px;}
+.ac-meta{font-size:12.5px;color:var(--text-paper-mute);margin-top:2px;}
+.ac-desc{font-size:13.5px;color:var(--text-paper-mute);margin:12px 0;line-height:1.5;min-height:38px;}
+.ac-row2{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.rating{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;}
+.rating .stars{color:var(--amber-dim);}
+.price-tag{font-family:var(--font-mono);font-size:13px;font-weight:500;}
+.price-tag b{font-family:var(--font-body);font-size:15px;}
+.ac-actions{display:flex;gap:8px;}
+.ac-actions .btn{flex:1;padding:10px 12px;font-size:13px;}
+
+/* event card (ticket stub) */
+.event-card{--perf:132px;--stub-bg:#fff;background:#fff;border:1.5px solid var(--line-paper);}
+.ec-banner{height:132px;position:relative;display:flex;align-items:flex-end;padding:14px;}
+.ec-banner .ec-cat{background:rgba(20,18,26,.55);color:#fff;backdrop-filter:blur(4px);}
+.ec-date-chip{position:absolute;top:14px;right:14px;background:#fff;border-radius:10px;padding:6px 10px;text-align:center;line-height:1.1;box-shadow:0 4px 10px rgba(0,0,0,.15);}
+.ec-date-chip b{display:block;font-family:var(--font-display);font-size:17px;}
+.ec-date-chip span{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;color:var(--text-paper-mute);}
+.ec-body{padding:22px 18px 18px;}
+.ec-title{font-family:var(--font-display);font-weight:700;font-size:17.5px;margin-bottom:6px;}
+.ec-org{font-size:12.5px;color:var(--text-paper-mute);margin-bottom:12px;}
+.ec-meta-list{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--text-paper);margin-bottom:16px;}
+.ec-meta-list span.ic{opacity:.55;margin-right:6px;}
+.ec-foot{display:flex;justify-content:space-between;align-items:center;}
+.ec-foot .btn{width:100%;}
+
+/* how it works */
+.steps-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+@media(max-width:900px){.steps-row{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.steps-row{grid-template-columns:1fr;}}
+.step{background:var(--ink-soft);border:1px solid var(--line-ink);border-radius:var(--radius-md);padding:26px 22px;}
+.step .num{font-family:var(--font-mono);color:var(--amber);font-size:12.5px;letter-spacing:.08em;margin-bottom:14px;display:block;}
+.step h4{font-size:17px;margin-bottom:8px;}
+.step p{font-size:13.5px;color:var(--text-ink-mute);line-height:1.55;}
+
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media(max-width:820px){.why-grid{grid-template-columns:1fr;}}
+.why-card{border:1.5px solid var(--line-paper);border-radius:var(--radius-md);padding:26px;background:var(--paper-dim);}
+.why-card .ic{font-size:24px;margin-bottom:12px;}
+.why-card h4{font-size:16.5px;margin-bottom:8px;}
+.why-card p{font-size:13.5px;color:var(--text-paper-mute);line-height:1.55;}
+
+.testi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media(max-width:900px){.testi-row{grid-template-columns:1fr;}}
+.testi{background:#fff;border:1.5px solid var(--line-paper);border-radius:var(--radius-lg);padding:26px;}
+.testi .stars{color:var(--amber-dim);font-size:14px;margin-bottom:14px;}
+.testi p{font-size:14.5px;line-height:1.6;margin-bottom:18px;}
+.testi .who{display:flex;align-items:center;gap:10px;}
+.testi .who b{font-size:13.5px;display:block;}
+.testi .who span{font-size:12px;color:var(--text-paper-mute);}
+
+.cta-band{background:linear-gradient(120deg,var(--violet-deep),var(--ink) 70%);color:#fff;border-radius:28px;padding:64px 48px;text-align:center;position:relative;overflow:hidden;}
+.cta-band h2{font-size:clamp(26px,3.6vw,40px);margin-bottom:14px;}
+.cta-band p{color:var(--text-ink-mute);max-width:480px;margin:0 auto 30px;}
+.cta-band .hero-glow{opacity:.7;}
+
+footer{background:var(--ink);color:var(--text-ink-mute);padding:64px 0 30px;}
+.foot-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:40px;margin-bottom:48px;}
+@media(max-width:800px){.foot-grid{grid-template-columns:repeat(2,1fr);}}
+.foot-grid h5{color:var(--text-ink);font-size:13px;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px;}
+.foot-grid a{display:block;font-size:13.5px;margin-bottom:10px;color:var(--text-ink-mute);}
+.foot-grid a:hover{color:var(--amber);}
+.foot-bottom{border-top:1px solid var(--line-ink);padding-top:24px;display:flex;justify-content:space-between;font-size:12.5px;flex-wrap:wrap;gap:10px;}
+
+/* ---------- generic page shell (app pages) ---------- */
+.page{min-height:70vh;}
+.page-hero{background:var(--ink);color:var(--text-ink);padding:52px 0 40px;}
+.page-hero h1{font-size:clamp(26px,3.6vw,36px);}
+.page-hero p{color:var(--text-ink-mute);margin-top:8px;max-width:560px;}
+.breadcrumb{font-family:var(--font-mono);font-size:11.5px;color:var(--text-ink-mute);letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px;}
+.breadcrumb a{color:var(--amber);}
+
+.layout-2col{display:grid;grid-template-columns:280px 1fr;gap:32px;padding:44px 0 90px;}
+@media(max-width:900px){.layout-2col{grid-template-columns:1fr;}}
+.filters-card{background:#fff;border:1.5px solid var(--line-paper);border-radius:var(--radius-lg);padding:22px;height:fit-content;position:sticky;top:90px;}
+.filters-card h4{font-size:14px;margin-bottom:16px;font-family:var(--font-body);font-weight:700;}
+.f-group{margin-bottom:20px;}
+.f-group label{display:block;font-size:12px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--text-paper-mute);margin-bottom:8px;}
+.f-group select,.f-group input[type=text],.f-group input[type=number],.f-group input[type=date],.f-group input[type=email],.f-group input[type=password],.f-group textarea{
+  width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--line-paper);font-family:var(--font-body);font-size:14px;background:#fff;color:var(--text-paper);
+}
+.f-group select:focus,.f-group input:focus,.f-group textarea:focus{outline:none;border-color:var(--coral);}
+.f-group textarea{resize:vertical;min-height:90px;}
+.chip-select{display:flex;flex-wrap:wrap;gap:8px;}
+.chip-opt{padding:7px 13px;border-radius:999px;border:1.5px solid var(--line-paper);font-size:12.5px;background:#fff;color:var(--text-paper);}
+.chip-opt.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.range-row{display:flex;align-items:center;gap:8px;}
+.results-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:12px;}
+.results-count{font-size:14px;color:var(--text-paper-mute);}
+.searchbar{position:relative;margin-bottom:26px;}
+.searchbar input{width:100%;padding:16px 20px 16px 46px;border-radius:14px;border:1.5px solid var(--line-paper);font-size:15px;background:#fff;}
+.searchbar input:focus{outline:none;border-color:var(--coral);}
+.searchbar .sic{position:absolute;left:18px;top:50%;transform:translateY(-50%);opacity:.5;}
+
+/* ---------- auth ---------- */
+.auth-shell{min-height:80vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 120% at 20% 0%,#26203a,var(--ink) 55%);padding:60px 20px;}
+.auth-card{background:var(--paper);border-radius:26px;width:100%;max-width:440px;padding:40px 36px;box-shadow:var(--shadow-lift);}
+.auth-card h2{font-size:26px;margin-bottom:6px;}
+.auth-card .sub{color:var(--text-paper-mute);font-size:13.5px;margin-bottom:26px;}
+.role-pick{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;}
+.role-opt{border:1.5px solid var(--line-paper);border-radius:16px;padding:20px 14px;text-align:left;background:#fff;transition:.15s;}
+.role-opt:hover{border-color:var(--coral);}
+.role-opt.active{border-color:var(--coral);background:rgba(232,92,74,.06);}
+.role-opt .ic{font-size:22px;margin-bottom:10px;}
+.role-opt b{display:block;font-size:14px;margin-bottom:3px;}
+.role-opt span{font-size:12px;color:var(--text-paper-mute);}
+.form-foot{margin-top:20px;text-align:center;font-size:13.5px;color:var(--text-paper-mute);}
+.form-foot a{color:var(--coral);font-weight:600;}
+.field-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.field-row2{grid-template-columns:1fr;}}
+
+/* ---------- dashboards ---------- */
+.dash-shell{background:var(--paper-dim);min-height:80vh;}
+.dash-top{padding:36px 0 0;}
+.dash-greet{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:28px;}
+.dash-greet h1{font-size:26px;}
+.dash-greet p{color:var(--text-paper-mute);margin-top:4px;font-size:14px;}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px;}
+@media(max-width:900px){.stat-row{grid-template-columns:repeat(2,1fr);}}
+.stat-card{background:#fff;border:1.5px solid var(--line-paper);border-radius:var(--radius-md);padding:20px;}
+.stat-card .lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-paper-mute);}
+.stat-card .val{font-family:var(--font-display);font-size:28px;margin-top:8px;}
+.stat-card .delta{font-size:12px;color:#3d7d58;margin-top:4px;}
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:22px;padding-bottom:80px;}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr;}}
+.panel{background:#fff;border:1.5px solid var(--line-paper);border-radius:var(--radius-lg);padding:24px;margin-bottom:22px;}
+.panel h3{font-size:16px;margin-bottom:16px;}
+.panel .see-all{float:right;font-size:12.5px;color:var(--coral);font-weight:600;}
+.list-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--line-paper);}
+.list-row:last-child{border-bottom:none;}
+.list-row .lr-main{flex:1;min-width:0;}
+.list-row .lr-title{font-weight:600;font-size:13.5px;}
+.list-row .lr-sub{font-size:12px;color:var(--text-paper-mute);margin-top:2px;}
+.quick-actions{display:flex;flex-direction:column;gap:10px;}
+.qa-btn{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line-paper);border-radius:12px;padding:14px 16px;background:#fff;text-align:left;font-size:13.5px;font-weight:600;}
+.qa-btn:hover{border-color:var(--coral);color:var(--coral);}
+.progress-bar{height:8px;border-radius:6px;background:var(--paper-dim);overflow:hidden;margin-top:10px;}
+.progress-bar > div{height:100%;background:var(--amber);}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;}
+.tbl th{text-align:left;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-paper-mute);padding:0 12px 10px;font-weight:500;}
+.tbl td{padding:14px 12px;border-top:1px solid var(--line-paper);vertical-align:middle;}
+.tbl tr:hover td{background:rgba(0,0,0,.015);}
+
+.empty-state{text-align:center;padding:60px 24px;}
+.empty-state .ic{font-size:36px;margin-bottom:16px;}
+.empty-state h4{font-size:16px;margin-bottom:8px;}
+.empty-state p{color:var(--text-paper-mute);font-size:13.5px;max-width:320px;margin:0 auto 20px;}
+
+.tabs{display:flex;gap:6px;border-bottom:1.5px solid var(--line-paper);margin-bottom:24px;overflow-x:auto;}
+.tab{padding:12px 4px;margin-right:22px;font-size:14px;font-weight:600;color:var(--text-paper-mute);border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;}
+.tab.active{color:var(--text-paper);border-color:var(--coral);}
+
+/* modal-ish toast */
+#toastwrap{position:fixed;bottom:22px;right:22px;z-index:200;display:flex;flex-direction:column;gap:10px;}
+.toast{background:var(--ink);color:var(--text-ink);padding:14px 18px;border-radius:12px;font-size:13.5px;box-shadow:var(--shadow-lift);display:flex;align-items:center;gap:10px;border-left:3px solid var(--amber);animation:toastin .2s ease;max-width:320px;}
+.toast.err{border-left-color:var(--coral);}
+@keyframes toastin{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* profile page */
+.profile-hero{background:var(--ink);position:relative;padding:0 0 0;color:#fff;}
+.profile-cover{height:220px;position:relative;}
+.profile-head{display:flex;gap:22px;align-items:flex-end;padding:0 0 30px;margin-top:-52px;flex-wrap:wrap;}
+.profile-avatar{width:112px;height:112px;font-size:34px;border:5px solid var(--ink);}
+.profile-name{font-size:26px;display:flex;align-items:center;gap:8px;}
+.profile-meta-row{display:flex;gap:16px;flex-wrap:wrap;color:var(--text-ink-mute);font-size:13.5px;margin-top:6px;}
+.profile-actions{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;}
+@media(max-width:700px){.profile-actions{margin-left:0;}}
+
+.pg-2col{display:grid;grid-template-columns:2fr 1fr;gap:32px;padding:40px 0 90px;}
+@media(max-width:900px){.pg-2col{grid-template-columns:1fr;}}
+.portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:560px){.portfolio-grid{grid-template-columns:repeat(2,1fr);}}
+.port-item{aspect-ratio:1;border-radius:12px;}
+.skill-tag{display:inline-block;background:var(--paper-dim);border-radius:999px;padding:6px 13px;font-size:12.5px;margin:0 6px 6px 0;}
+.review-item{padding:18px 0;border-bottom:1px solid var(--line-paper);}
+.review-item:last-child{border-bottom:none;}
+.sidepanel-card{background:#fff;border:1.5px solid var(--line-paper);border-radius:var(--radius-lg);padding:22px;margin-bottom:18px;}
+.sidepanel-card h4{font-size:14.5px;margin-bottom:14px;}
+.price-box{text-align:center;padding:8px 0 4px;}
+.price-box .amt{font-family:var(--font-display);font-size:30px;}
+.price-box .per{font-size:12px;color:var(--text-paper-mute);}
+
+/* booking / payment */
+.booking-shell{max-width:660px;margin:0 auto;padding:50px 20px 100px;}
+.summary-line{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line-paper);font-size:14px;}
+.summary-line.total{border-bottom:none;padding-top:16px;font-weight:700;font-size:17px;}
+.step-track{display:flex;align-items:center;gap:6px;margin-bottom:34px;}
+.step-track .sdot{width:26px;height:26px;border-radius:50%;background:var(--paper-dim);color:var(--text-paper-mute);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-mono);}
+.step-track .sdot.active{background:var(--ink);color:#fff;}
+.step-track .sdot.done{background:var(--green);color:#fff;}
+.step-track .sline{flex:1;height:2px;background:var(--line-paper);}
+.confirm-box{text-align:center;padding:20px 0 10px;}
+.confirm-box .ic{font-size:52px;margin-bottom:16px;}
+.confirm-box h2{font-size:26px;margin-bottom:8px;}
+.confirm-detail-card{background:#fff;border:1.5px solid var(--line-paper);border-radius:var(--radius-lg);padding:24px;margin:26px 0;text-align:left;}
+
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:4px 10px;border-radius:999px;font-weight:500;}
+.status-Pending{background:rgba(242,169,59,.16);color:var(--amber-dim);}
+.status-Accepted{background:rgba(95,174,125,.15);color:#3d7d58;}
+.status-Confirmed{background:rgba(95,174,125,.15);color:#3d7d58;}
+.status-Rejected{background:rgba(232,92,74,.13);color:var(--coral);}
+.status-Withdrawn{background:rgba(28,23,32,.06);color:var(--text-paper-mute);}
+.status-Cancelled{background:rgba(28,23,32,.06);color:var(--text-paper-mute);}
+.status-Completed{background:rgba(61,140,242,.13);color:#3d8cf2;}
+.status-PaymentPending{background:rgba(242,169,59,.16);color:var(--amber-dim);}
+
+.fade-in{animation:fadeIn .28s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+::selection{background:var(--amber);color:var(--ink);}
+
+:focus-visible{outline:3px solid #b64c30;outline-offset:4px}
+button[aria-busy=true]{opacity:.65;cursor:wait;pointer-events:none}
+.portfolio-image{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px}
+.panel{overflow-x:auto}.tbl{min-width:540px}.f-group input,.f-group select,.f-group textarea{max-width:100%}
+.status-Declined,.status-Cancelled{background:#fbe0df;color:#8b2727}
+@media(max-width:640px){.wrap{width:calc(100% - 32px)!important}.field-row2,.pg-2col,.dash-grid{grid-template-columns:1fr!important}.stat-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}.profile-head{flex-wrap:wrap}.profile-actions{flex-wrap:wrap}.list-row{flex-wrap:wrap}.hero-card-stack{display:none}.panel{padding:20px}.booking-shell{padding:28px 16px}.hero h1{font-size:clamp(40px,12vw,68px)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media(max-width:640px){.nav-inner{width:100%!important;padding:0 16px}.brand{font-size:17px}.navcta{gap:6px}.navcta button[data-view=register],.navcta .icon-btn[title=Profile]{display:none}.navcta .btn{padding:8px 10px}.nav-inner>div:last-child{gap:6px!important}}
+.artist-card,.event-card{color:var(--text-paper)}.ec-date-chip{color:var(--text-paper)}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+@media(max-width:920px){.navlinks:not(.open){visibility:hidden}}
+.dash-grid>*,.pg-2col>*,.layout-2col>*{min-width:0}.stat-card{min-width:0;overflow-wrap:anywhere}
+</style>
+<link rel="stylesheet" href="/design.css">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="theme-color" content="#faf8f4">
+<meta name="description" content="Discover independent artists, book creative talent, and find your next collaborator with TalentSphere.">
+</head>
+<body>
+<div id="toastwrap" role="status" aria-live="polite"></div>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div id="app"></div>
+<dialog id="media-dialog" class="media-dialog" aria-labelledby="media-title"><div class="dialog-head"><h2 id="media-title">Portfolio preview</h2><button class="btn btn-sm btn-outline-paper" data-action="close-preview" aria-label="Close portfolio preview">Close</button></div><img id="media-dialog-image" class="dialog-image" alt=""></dialog>
+
+<script src="/config.js"></script>
+<script>
+/* =========================================================
+   TALENTSPHERE FRONTEND
+   Single-page application. Records are loaded from the Express API;
+   authentication and persistence use the backend; payments require verified Razorpay capture.
+   ========================================================= */
+
+/* ---------------- DATA ---------------- */
+const CATEGORIES = [
+  {name:"Singers",ic:"mic",desc:"Vocalists across genres"},
+  {name:"Musicians",ic:"music",desc:"Instrumentalists & bands"},
+  {name:"Dancers",ic:"activity",desc:"Solo & troupe performers"},
+  {name:"Actors",ic:"film",desc:"Stage & screen talent"},
+  {name:"Comedians",ic:"smile",desc:"Stand-up & improv"},
+  {name:"Poets",ic:"feather",desc:"Spoken word artists"},
+  {name:"Producers",ic:"headphones",desc:"Music & sound production"},
+  {name:"Photographers",ic:"camera",desc:"Event & portrait shooters"},
+];
+const GRADIENTS = ["#eae5f0"];
+function grad(seed){return GRADIENTS[seed % GRADIENTS.length];}
+
+/* ---------------- ICONS ---------------- */
+// A small set of stroke-based line icons (in the style of Feather/Lucide),
+// used instead of emoji throughout the UI for a cleaner, more professional look.
+const ICON_PATHS = {
+  arrowright:'<path d="M4 12h16M13 5l7 7-7 7"/>',
+  sliders:'<path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor"/><circle cx="15" cy="17" r="3" fill="currentColor"/>',
+  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+  mic: '<path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/>',
+  music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+  activity: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+  film: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="3" x2="7" y2="21"/><line x1="17" y1="3" x2="17" y2="21"/><line x1="3" y1="8" x2="7" y2="8"/><line x1="3" y1="16" x2="7" y2="16"/><line x1="17" y1="8" x2="21" y2="8"/><line x1="17" y1="16" x2="21" y2="16"/>',
+  smile: '<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  feather: '<path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/>',
+  headphones: '<path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
+  camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  checkcircle: '<circle cx="12" cy="12" r="9"/><polyline points="8 12 11 15 16 9"/>',
+  alert: '<path d="M12 2 1 21h22z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  pin: '<path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3"/>',
+  shield: '<path d="M12 2 4 5v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V5z"/>',
+  message: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+  card: '<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
+  palette: '<path d="M12 2a10 10 0 1 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.4-.3-.4-.5-.9-.5-1.4 0-1.1.9-2 2-2h2.3c1.5 0 2.7-1.2 2.7-2.7C20 6.6 16.4 2 12 2z"/><circle cx="7" cy="10" r="1.1"/><circle cx="10" cy="6.5" r="1.1"/><circle cx="15" cy="7" r="1.1"/><circle cx="17.5" cy="11.5" r="1.1"/>',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  search: '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  flag: '<path d="M4 22V4"/><path d="M4 4h14l-2.5 4L18 12H4"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  landmark: '<line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 21 8 3 8"/>',
+  smartphone: '<rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>',
+  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  ticket: '<path d="M3 9a2 2 0 0 1 0-4V4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v1a2 2 0 0 0 0 4v1a2 2 0 0 0 0 4v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1a2 2 0 0 0 0-4z"/><line x1="9" y1="4" x2="9" y2="20" stroke-dasharray="2 2.5"/>',
+  filetext: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>',
+  clipboard: '<path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z"/><rect x="5" y="4" width="14" height="18" rx="2"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/>',
+};
+function icon(name, size=16, stroke=1.8){
+  const path = ICON_PATHS[name] || ICON_PATHS.circle || '';
+  return `<svg aria-hidden="true" focusable="false" class="ico" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${stroke}" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+}
+function initials(name){return name.replace(/^\[Demo\]\s*/, "").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();}
+
+// All data below is loaded from the TalentSphere REST API (see /backend).
+// Nothing here is hardcoded — these are simply the in-memory caches the UI renders from.
+let ARTISTS = [];
+let EVENTS = [];
+let APPLICATIONS = [];
+let BOOKINGS = [];
+let COLLABORATIONS = [];
+let REVIEWS = [];
+let NOTIFICATIONS = [];
+let ADMIN_USERS = [];
+let ADMIN_REPORTS = {};
+let PAYMENT_DETAIL = null, PAYMENT_HISTORY = [], PAYMENT_RECEIPT = null;
+let ADMIN_PAYMENTS = {orders:[],total:0,page:1};
+let paymentAdminFilters = {status:'',mode:'',q:'',page:1};
+let checkoutInProgress = false, paymentRefreshInProgress = false, checkoutScriptPromise;
+function fmtPaise(amount){return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR'}).format((amount||0)/100);}
+function paymentBadge(status){const names={unpaid:'Not paid',pending:'Pending',authorized:'Awaiting capture',paid:'Paid',captured:'Captured',failed:'Failed',abandoned:'Checkout closed',expired:'Session expired',cancelled:'Cancelled',review_required:'Admin review',partially_refunded:'Partially refunded',refunded:'Refunded',creating:'Preparing order',created:'Order created',creation_unknown:'Creation unresolved'};return `<span class="status-badge payment-${status}">${names[status]||status}</span>`;}
+async function loadPaymentPage(){
+ if(state.view==='payment'&&state.role==='organizer')PAYMENT_DETAIL=await api(`/payments/bookings/${state.params.id}`);
+ if(state.view==='payment-history'&&state.role==='organizer')PAYMENT_HISTORY=await api('/payments/history');
+ if(state.view==='receipt'&&state.role==='organizer')PAYMENT_RECEIPT=await api(`/payments/receipts/${state.params.id}`);
+ if(state.view==='admin-payments'&&state.role==='admin'){
+  const query=new URLSearchParams(Object.entries(paymentAdminFilters).filter(([,value])=>value!==''));
+  ADMIN_PAYMENTS=await api('/payments/admin/orders?'+query);
+ }
+}
+async function refreshPaymentStatus(){
+ if(paymentRefreshInProgress||checkoutInProgress||state.view!=='payment'||state.role!=='organizer'||document.hidden)return;
+ paymentRefreshInProgress=true;const bookingId=state.params.id;
+ try{const data=await api(`/payments/bookings/${bookingId}`);if(state.view==='payment'&&state.params.id===bookingId){PAYMENT_DETAIL=data;render();}}catch(err){toast(err.message,true);}finally{paymentRefreshInProgress=false;}
+}
+function loadCheckoutScript(){
+ if(window.Razorpay)return Promise.resolve();
+ if(checkoutScriptPromise)return checkoutScriptPromise;
+ checkoutScriptPromise=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://checkout.razorpay.com/v1/checkout.js';script.async=true;script.onload=()=>window.Razorpay?resolve():reject(new Error('Checkout could not be initialized.'));script.onerror=()=>{script.remove();checkoutScriptPromise=null;reject(new Error('Razorpay Checkout could not load. Check your connection and try again.'));};document.head.appendChild(script);});
+ return checkoutScriptPromise;
+}
+async function startCheckout(bookingId){
+ if(checkoutInProgress)return;checkoutInProgress=true;render();
+ let timer,settled=false,checkout;
+ async function finish(action,response){
+  if(settled)return;settled=true;clearTimeout(timer);
+  try{
+   if(action==='verify'){
+    PAYMENT_DETAIL=await api(`/payments/bookings/${bookingId}/verify`,{method:'POST',body:JSON.stringify(response)});
+    toast(PAYMENT_DETAIL.booking.paymentStatus==='paid'?'Captured payment verified. Your booking is confirmed.':'Payment is still awaiting capture or review. Check the saved status below.');
+   }else{
+    if(['dismissed','timeout'].includes(action))await api(`/payments/bookings/${bookingId}/session`,{method:'POST',body:JSON.stringify({action})});
+    PAYMENT_DETAIL=await api(`/payments/bookings/${bookingId}`);
+    toast(action==='failed'?'Payment did not complete. Provider status has been checked.':'Checkout closed. Any delayed payment will be reconciled before another attempt.');
+   }
+  }catch(err){toast(err.message,true);}finally{checkoutInProgress=false;checkout?.close();await nav('payment',{id:bookingId});}
+ }
+ try{
+  const order=await api(`/payments/bookings/${bookingId}/order`,{method:'POST',body:'{}'});
+  await loadCheckoutScript();
+  checkout=new window.Razorpay({key:order.keyId,order_id:order.orderId,amount:order.amountPaise,currency:order.currency,name:'TalentSphere',description:'Artist booking '+bookingId,
+   theme:{color:'#24584c'},timeout:900,retry:{enabled:false},
+   handler:response=>finish('verify',response),modal:{ondismiss:()=>finish('dismissed')}});
+  checkout.on('payment.failed',()=>finish('failed'));
+  timer=setTimeout(()=>finish('timeout'),Math.max(0,order.sessionExpiresAt-Date.now()));
+  checkout.open();
+ }catch(err){checkoutInProgress=false;toast(err.message,true);await nav('payment',{id:bookingId});}
+}
+setInterval(refreshPaymentStatus,15000);
+
+function unescapeText(value){const element=document.createElement("textarea");element.innerHTML=value;return element.value;}
+function escapeRecord(value){
+ if(typeof value==="string")return value.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+ if(Array.isArray(value))return value.map(escapeRecord);
+ if(value&&typeof value==="object")return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,escapeRecord(v)]));return value;
+}
+// Keep imported display labels separate from stored account and event records.
+function presentRecord(value){
+ if(Array.isArray(value))return value.map(presentRecord);
+ if(!value||typeof value!=='object')return value;
+ const result=Object.fromEntries(Object.entries(value).map(([key,item])=>[key,presentRecord(item)]));
+ const imported=typeof value.name==='string'&&/^\[Demo\]\s*/i.test(value.name);
+ for(const key of ['name','artistName','organizerName','eventName','author']){
+  if(typeof result[key]==='string')result[key]=result[key].replace(/^\[Demo\]\s*/i,'');
+ }
+ if(imported){result.isExample=true;result.verified=false;result.rating=0;result.reviews=0;}
+ return result;
+}
+/* ---------------- API CLIENT ---------------- */
+const API_BASE = window.TALENTSPHERE_API_BASE || "/api";
+function authToken(){ return localStorage.getItem("ts_token"); }
+function setAuthToken(t){ if(t) localStorage.setItem("ts_token", t); else localStorage.removeItem("ts_token"); }
+
+async function api(path, options={}){
+  const headers = Object.assign({"Content-Type":"application/json"}, options.headers||{});
+  const token = authToken();
+  if(token) headers["Authorization"] = "Bearer "+token;
+  let res;
+  try{
+    res = await fetch(API_BASE+path, Object.assign({}, options, {headers}));
+  }catch(networkErr){
+    throw new Error("We could not connect. Check your connection and try again.");
+  }
+  let data = null;
+  try{ data = await res.json(); }catch(e){ /* empty body */ }
+  if(res.status===401){setAuthToken(null);state.role=null;state.user=null;}
+  if(!res.ok){
+    const error=new Error((data && data.error) || "Something went wrong.");
+    error.code=data?.code;error.status=res.status;error.data=data||{};throw error;
+  }
+  return escapeRecord(presentRecord(data));
+}
+
+// Backend Event rows use organizerName/gradSeed/icon; the UI templates were written
+// against organizer/grad/ic. Map once here rather than touching every render function.
+function mapEvent(e){
+  return Object.assign({}, e, {organizer:e.organizerName, grad:e.gradSeed, ic:e.icon});
+}
+
+function timeAgo(iso){
+  const then = new Date(iso.replace(" ","T")+"Z").getTime();
+  const diffMs = Date.now()-then;
+  const mins = Math.round(diffMs/60000);
+  if(mins<1) return "just now";
+  if(mins<60) return mins+"m ago";
+  const hrs = Math.round(mins/60);
+  if(hrs<24) return hrs+"h ago";
+  const days = Math.round(hrs/24);
+  if(days<30) return days+"d ago";
+  const months = Math.round(days/30);
+  return months+"mo ago";
+}
+function mapNotification(n){ return Object.assign({}, n, {when:timeAgo(n.createdAt)}); }
+
+function readVerificationState(){try{return JSON.parse(sessionStorage.getItem('ts_email_verification'))||{email:'',resendAvailableAt:0};}catch{return {email:'',resendAvailableAt:0};}}
+function rememberVerification(email,details={}){
+ const normalized=email.trim().toLowerCase();
+ const previous=state.verification.email===normalized?state.verification:{email:normalized,resendAvailableAt:0};
+ const retry=details.retryAfterSeconds?Date.now()+details.retryAfterSeconds*1000:0;
+ state.verification={...previous,email:normalized,resendAvailableAt:Math.max(details.resendAvailableAt||previous.resendAvailableAt||0,retry)};
+ sessionStorage.setItem('ts_email_verification',JSON.stringify(state.verification));
+}
+function authFeedback(){return state.authNotice?`<div class="auth-feedback ${state.authNoticeError?'is-error':''}" role="${state.authNoticeError?'alert':'status'}">${escapeRecord(state.authNotice)}</div>`:'';}
+function syncAuthControls(){
+ document.querySelectorAll('[data-auth-submit]').forEach(button=>{button.disabled=state.authBusy;button.setAttribute('aria-busy',String(state.authBusy));});
+ const resend=document.querySelector('[data-action="resend-code"]');
+ if(resend){const remaining=Math.max(0,Math.ceil(((state.verification.resendAvailableAt||0)-Date.now())/1000));resend.disabled=state.authBusy||remaining>0;resend.textContent=state.authBusy?'Please wait...':remaining?`Resend in ${Math.floor(remaining/60)}:${String(remaining%60).padStart(2,'0')}`:'Send a new code';}
+}
+setInterval(()=>{if(state.view==='verify-email')syncAuthControls();},1000);
+async function showAccountBlock(err){
+ setAuthToken(null);state.role=null;state.user=null;
+ if(err.code==='EMAIL_UNVERIFIED'){
+  rememberVerification(err.data.email||state.authEmail,err.data);await nav('verify-email');return true;
+ }
+ if(['APPROVAL_PENDING','APPROVAL_REJECTED','ACCOUNT_SUSPENDED','ACCOUNT_UNAVAILABLE'].includes(err.code)){
+  state.approvalMessage=err.message;await nav('account-status');return true;
+ }
+ return false;
+}
+/* ---------------- STATE ---------------- */
+let state = {
+  view:"landing",
+  role:null,          // null | 'artist' | 'organizer' | 'admin'
+  user:null,          // {name, id}
+  params:{},
+  regRole:"artist",
+  explore:{page:1,availability:"All",q:"",category:"All",location:"All",sort:"Recommended",maxPrice:null},
+  bookingDraft:null,
+  navOpen:false,
+  filtersOpen:false,
+  loading:true,
+  authChecked:false,
+  authEmail:'',authNotice:'',authNoticeError:false,authBusy:false,approvalMessage:'',
+  verification:readVerificationState(),
+};
+
+function toast(msg, err){
+  const wrap = document.getElementById("toastwrap");
+  const el = document.createElement("div");
+  el.className = "toast"+(err?" err":"");
+  el.innerHTML = `<span>${err?icon('alert',15):icon('checkcircle',15)}</span><span>${escapeRecord(msg)}</span>`;
+  while(wrap.children.length>=3)wrap.firstElementChild.remove();
+  wrap.appendChild(el);
+  setTimeout(()=>{el.style.opacity="0";el.style.transition=".25s";setTimeout(()=>el.remove(),250);},3200);
+}
+
+async function nav(view, params={}){
+  state.view = view;
+  history.replaceState(null,"", "#"+view+(params.id?"/"+encodeURIComponent(params.id):""));
+  state.params = params;
+  state.navOpen = false;
+  state.pageError=null;state.loading=true;render();
+  window.scrollTo({top:0,behavior:"instant"});
+  try{
+    await refreshPublicData();
+    await refreshRoleData();
+    await loadPaymentPage();
+    if(view==="artist-profile" && params.id){
+      const detail = await api(`/artists/${params.id}`);
+      REVIEWS = detail.reviews;
+      const idx = ARTISTS.findIndex(a=>a.id===params.id);
+      if(idx>=0) ARTISTS[idx] = detail.artist; else ARTISTS.push(detail.artist);
+    }
+    if(view==="admin-users"){
+      ADMIN_USERS = await api("/admin/users");
+    }
+    if(view==="admin-dashboard"){
+      ADMIN_REPORTS = await api("/admin/reports");
+    }
+  }catch(err){
+    state.pageError=err.message;toast(err.message, true);
+  }
+  state.loading=false;
+  render();
+}
+
+// Pulls the data each role's views depend on. Cheap enough to call on every
+// navigation for a project this size — keeps every screen in sync with the DB.
+async function refreshRoleData(){
+  if(state.role==="artist" || state.role==="organizer"){
+    const [bookings, applications, notifications] = await Promise.all([
+      api("/bookings"), api("/applications"), api("/notifications")
+    ]);
+    BOOKINGS = bookings;
+    APPLICATIONS = applications;
+    NOTIFICATIONS = notifications.map(mapNotification);
+    COLLABORATIONS = state.role==="artist" ? await api("/collaborations") : [];
+  }else if(state.role==="admin"){
+    const [events, bookings] = await Promise.all([api("/admin/events"), api("/admin/bookings")]);
+    EVENTS = events.map(mapEvent);
+    BOOKINGS = bookings;
+  }else{
+    BOOKINGS = []; APPLICATIONS = []; NOTIFICATIONS = []; COLLABORATIONS = [];
+  }
+}
+
+async function refreshPublicData(){
+  const [artists, events] = await Promise.all([api("/artists"), api("/events")]);
+  ARTISTS = artists;
+  EVENTS = events.map(mapEvent);
+}
+
+// Restores a session from a saved token, loads baseline data, then renders.
+async function boot(){
+  try{
+    await refreshPublicData();
+  }catch(err){
+    document.getElementById("app").innerHTML = `<div style="padding:80px 24px;text-align:center;font-family:sans-serif;color:#c24a3e;">Couldn't reach the TalentSphere API. Make sure the backend is running (see README), then refresh.<br><br><small>${err.message}</small></div>`;
+    return;
+  }
+  const token = authToken();
+  if(token){
+    try{
+      const me = await api("/auth/me");
+      state.role = me.user.role;
+      state.user = { id:me.user.id, name: me.user.name, artistId: me.artistProfile ? me.artistProfile.id : null };
+      await refreshRoleData();
+    }catch(err){
+      setAuthToken(null);
+      state.role = null; state.user = null;
+      if(err.code==='EMAIL_UNVERIFIED'){rememberVerification(err.data.email,err.data);state.authRedirect='verify-email';state.authNotice=err.message;}
+      else if(['APPROVAL_PENDING','APPROVAL_REJECTED','ACCOUNT_SUSPENDED'].includes(err.code)){state.authRedirect='account-status';state.approvalMessage=err.message;}
+    }
+  }
+  const [route,routeId]=location.hash.slice(1).split("/");
+  if(route && route!=="booking-review"){
+    state.view=route;state.params=routeId?{id:decodeURIComponent(routeId)}:{};
+    if(route==="artist-profile"&&routeId){try{const detail=await api(`/artists/${encodeURIComponent(routeId)}`);REVIEWS=detail.reviews;}catch(err){toast(err.message,true);}}
+    if(state.role==="admin"){ADMIN_REPORTS=await api("/admin/reports");ADMIN_USERS=await api("/admin/users");}
+  }
+  if(state.authRedirect){state.view=state.authRedirect;state.params={};history.replaceState(null,"","#"+state.authRedirect);state.authRedirect=null;}
+  try{await loadPaymentPage();}catch(err){state.pageError=err.message;}
+  state.loading = false;
+  render();
+}
+
+function findArtist(id){return ARTISTS.find(a=>a.id===id);}
+function findEvent(id){return EVENTS.find(e=>e.id===id);}
+function fmtMoney(n){return "₹"+n.toLocaleString("en-IN");}
+function fmtDate(d){const dt=new Date(d+"T00:00:00");return dt.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});}
+function stars(n){const full=Math.round(n);return "★★★★★".slice(0,full)+"☆☆☆☆☆".slice(0,5-full);}
+
+/* ---------------- NAV ---------------- */
+function renderNav(){
+  const r = state.role;
+  let links = [];
+  if(!r){
+    links = [
+      ["explore","Explore artists"],["events","Events"],["collaborate","Collaborate"],["about","About"],
+    ];
+  } else if(r==="artist"){
+    links = [["artist-dashboard","Dashboard"],["explore","Discover"],["events","Events"],["artist-bookings","Bookings"],["collaborate","Collaborations"],["artist-portfolio","My portfolio"]];
+  } else if(r==="organizer"){
+    links = [["organizer-dashboard","Dashboard"],["explore","Explore artists"],["events","Events"],["organizer-applications","Applications"],["organizer-bookings","Bookings"],["payment-history","Payments"]];
+  } else if(r==="admin"){
+    links = [["admin-dashboard","Dashboard"],["admin-users","Users"],["admin-events","Events"],["admin-bookings","Bookings"],["admin-payments","Payments"]];
+  }
+  const activeSet = new Set([state.view]);
+  const linksHtml = links.map(([v,label])=>
+    `<button class="navlink ${activeSet.has(v)?'active':''}" data-action="nav" data-view="${v}">${label}</button>`
+  ).join("");
+
+  let rightHtml;
+  if(!r){
+    rightHtml = `
+      <div class="navcta">
+        <button class="btn btn-outline-ink btn-sm" data-action="nav" data-view="login">Log in</button>
+        <button class="btn btn-amber btn-sm" data-action="nav" data-view="register">Join TalentSphere</button>
+      </div>`;
+  } else {
+    const unread = NOTIFICATIONS.filter(n=>!n.read).length;
+    rightHtml = `
+      <div class="navcta">
+        <button class="icon-btn" data-action="nav" data-view="notifications" title="Notifications">${icon('bell',18)}${unread?'<span class="badge-dot"></span>':''}</button>
+        <button class="icon-btn" data-action="nav" data-view="${r==='artist'?'artist-portfolio':r+'-dashboard'}" title="Profile">${icon('user',18)}</button>
+        <button class="btn btn-outline-ink btn-sm" data-action="logout">Log out</button>
+      </div>`;
+  }
+
+  return `
+  <nav id="topnav">
+    <div class="wrap nav-inner">
+      <button class="brand" data-action="nav" data-view="landing" style="background:none;border:none;padding:0;"><span class="dot"></span>TalentSphere</button>
+      <div id="primary-navigation" class="navlinks ${state.navOpen?'open':''}">${linksHtml}</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        ${rightHtml}
+        <button class="menu-toggle" aria-label="Toggle navigation" aria-controls="primary-navigation" aria-expanded="${state.navOpen}" data-action="togglenav">${icon('menu',22)}</button>
+      </div>
+    </div>
+  </nav>`;
+}
+
+/* ---------------- ARTIST / EVENT CARD PARTIALS ---------------- */
+function profileImage(a){
+ if(a?.media?.[0])return a.media[0];
+ const portraits={'Meera Anand':1,'Rohan Kapoor':2,'Ananya &amp; The Waves':3,'Kabir Rehman':4,'DJ Vireo':5,'Priya Suresh':6,'Arjun Mehta':7,'Ishaani Roy':8};
+ const portrait=a?.isExample&&portraits[a.name];
+ return portrait?'/assets/profiles/portrait-'+portrait+'.jpg':'/assets/profiles/default-avatar.svg';
+}
+function profilePicture(a,width=112,height=112){
+ return `<img src="${profileImage(a)}" alt="${a?.name||'Artist'} profile picture" loading="lazy" decoding="async" width="${width}" height="${height}" onerror="this.onerror=null;this.src='/assets/profiles/default-avatar.svg'">`;
+}
+function artistPhoto(a){return `<div class="artist-image">${profilePicture(a,480,360)}</div>`;}
+function artistCard(a, idx, collaboration=false){
+ return `<article class="artist-card">${artistPhoto(a)}<div class="ac-body"><div class="ac-name-row"><h3 class="ac-name">${a.name}</h3>${a.verified&&!a.isExample?`<span class="verified" title="Admin-verified profile">${icon('checkcircle',15)}</span>`:''}</div><div class="ac-meta">${a.category}<br>${icon('pin',12)} ${a.location}</div><p class="ac-desc">${a.bio?a.bio.slice(0,95)+(a.bio.length>95?'&hellip;':''):'Explore this artist profile and discuss your next event.'}</p><div class="ac-row2"><span class="price-tag">${Number.isFinite(a.price)?`From <b>${fmtMoney(a.price)}</b> / event`:'Pricing on request'}</span></div><div class="ac-actions"><button class="btn btn-outline-paper" data-action="nav" data-view="artist-profile" data-id="${a.id}">View profile</button><button class="btn btn-coral" data-action="${collaboration?'collab-request':'book'}" data-id="${a.id}">${collaboration?'Collaborate':'Request booking'}</button></div></div></article>`;
+}
+
+function eventImage(e){
+ const category=(e?.category||'').toLowerCase();
+ const photo=category.includes('wedding')?'wedding':category.includes('corporate')?'conference':category.includes('music')?'concert':category.includes('dance')?'performance':category.includes('comedy')||category.includes('mic')?'performance':'festival';
+ return '/assets/events/'+photo+'.jpg';
+}
+function eventThumbnail(e){return `<img class="event-thumbnail" src="${eventImage(e)}" alt="" width="48" height="48" loading="lazy">`;}
+function eventCard(e, idx){
+  const d = new Date(e.date+"T00:00:00");
+  return `
+  <div class="stub event-card">
+    <div class="stub-notch left"></div><div class="stub-notch right"></div>
+    <div class="ec-banner"><img class="event-cover-image" src="${eventImage(e)}" alt="${e.category} event atmosphere" width="1200" height="720" loading="lazy" decoding="async">
+      <span class="pill ec-cat">${e.category}</span>
+      <div class="ec-date-chip"><b>${d.getDate()}</b><span>${d.toLocaleDateString('en-IN',{month:'short'})}</span></div>
+    </div>
+    <div class="ec-body">
+      <div class="ec-title">${e.name}</div>
+      <div class="ec-org">by ${e.organizer}</div>
+      <div class="ec-meta-list">
+        <div><span class="ic">${icon('pin',14)}</span>${e.venue}, ${e.location}</div>
+        <div><span class="ic">${icon('clock',14)}</span>${e.time}</div>
+        <div><span class="ic">${icon('target',14)}</span>Looking for: ${e.talent}</div>
+        <div><span class="ic">${icon('calendar',14)}</span>Apply by ${fmtDate(e.deadline)}</div>
+      </div>
+      <div class="ec-foot"><button class="btn btn-dark" data-action="nav" data-view="event-detail" data-id="${e.id}">View event</button></div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- LANDING ---------------- */
+function renderLanding(){
+ const featured=ARTISTS.slice(0,4);
+ return `<section class="hero"><div class="wrap hero-grid"><div><span class="eyebrow">Independent talent. Shared possibilities.</span><h1>Find your artist.<br>Create something <em>extraordinary.</em></h1><p class="lead">Discover creative professionals, book talent for your next event, and connect with artists who share your vision.</p><div class="hero-ctas"><button class="btn btn-coral" data-action="nav" data-view="explore">Explore Artists ${icon('arrowright',15)}</button><button class="btn btn-outline-paper" data-action="nav" data-view="register" data-role="artist">Join as an Artist</button></div><p class="hero-note">${icon('checkcircle',15)} Discover talent. Review portfolios. Book with confidence.</p></div><figure class="hero-media"><img class="hero-photo" src="/assets/creative-stage.jpg" alt="A microphone ready for a live performance" width="1400" height="933" fetchpriority="high" decoding="async"><figcaption><b>Make room for your next big idea.</b>From a live performance to a new creative partnership.</figcaption></figure></div></section><div class="wrap"><div class="hero-rule"><span>${icon('search',17)} Discover independent creatives</span><span>${icon('calendar',17)} Plan your next performance</span><span>${icon('users',17)} Build something together</span></div></div>
+ <section class="categories-section"><div class="wrap"><div class="section-head"><div><span class="eyebrow">A world of creativity</span><h2>Find your kind of talent.</h2></div></div><div class="cat-grid">${CATEGORIES.map(c=>`<button class="cat-card" data-action="nav" data-view="explore" data-category="${c.name}"><span class="ic">${icon(c.ic,26)}</span><b>${c.name}</b></button>`).join('')}</div></div></section>
+ <section><div class="wrap"><div class="section-head"><div><span class="eyebrow">Meet the community</span><h2>Featured artists</h2><p class="section-sub">Distinct voices. Original perspectives. Find the right person for what you have in mind.</p></div><button class="btn btn-outline-paper" data-action="nav" data-view="explore">Explore all artists ${icon('arrowright',15)}</button></div><div class="card-row">${featured.map((a,i)=>artistCard(a,i)).join('')||`<div class="empty-state"><div class="ic">${icon('palette',32)}</div><h3>A space for the next great artist.</h3><p>No artists listed yet. Create a profile to be discovered and share what you do best.</p><button class="btn btn-coral" data-action="nav" data-view="register" data-role="artist">Create your artist profile</button></div>`}</div></div></section>
+ <section style="background:var(--paper-dim)"><div class="wrap"><div class="section-head"><div><span class="eyebrow">From discovery to the main event</span><h2>A simpler way to book talent.</h2></div></div><div class="steps-row"><div class="step"><span class="num">01 / DISCOVER</span><h4>Find your creative match.</h4><p>Explore disciplines, browse portfolios, and find an artist who fits your vision and budget.</p></div><div class="step"><span class="num">02 / REQUEST</span><h4>Share what you have in mind.</h4><p>Send your date, location, and event details. The artist reviews your request and responds.</p></div><div class="step"><span class="num">03 / CREATE</span><h4>Confirm. Then make it happen.</h4><p>Review your accepted quote and pay securely through Razorpay to confirm your booking.</p></div></div></div></section>
+ <section><div class="wrap"><div class="cta-band"><span class="eyebrow on-ink">Good things start with a connection.</span><h2 style="margin-top:16px">Your next collaboration is out there.</h2><p>Bring your talent to the community, or find the creative partner who can bring your idea to life.</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn btn-amber" data-action="nav" data-view="register" data-role="artist">Join as an Artist</button><button class="btn btn-outline-ink" data-action="nav" data-view="register" data-role="organizer">I am booking talent</button></div></div></div></section>${renderFooter()}`;
+}
+
+function renderFooter(){return `<footer class="footer"><div class="wrap"><div class="foot-grid"><div><button class="brand" data-action="nav" data-view="landing" style="background:none;border:0;padding:0"><span class="dot"></span>TalentSphere</button><p style="max-width:290px;margin-top:16px">A place for creative people<br>and the ideas that bring them together.</p></div><div><h5>DISCOVER</h5><a href="#explore" data-action="nav" data-view="explore">Explore artists</a><a href="#events" data-action="nav" data-view="events">Find opportunities</a><a href="#collaborate" data-action="nav" data-view="collaborate">Collaborate</a></div><div><h5>GET INVOLVED</h5><a href="#register" data-action="nav" data-view="register" data-role="artist">Join as an artist</a><a href="#register" data-action="nav" data-view="register" data-role="organizer">Book talent</a><a href="#about" data-action="nav" data-view="about">About TalentSphere</a></div></div><div class="foot-bottom"><span>&copy; ${new Date().getFullYear()} TalentSphere</span><span>Independent talent. Meaningful connections.</span></div></div></footer>`;}
+
+function renderAbout(){
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">About us</span><h1 style="margin-top:10px;">Built for the creative economy.</h1><p>TalentSphere connects creative professionals with the people who want to book, hire and collaborate with them — without the noise of generic marketplaces.</p></div></div>
+  <section><div class="wrap" style="max-width:760px;">
+    <p style="font-size:16px;line-height:1.8;margin-bottom:20px;">TalentSphere helps creative professionals share their work and helps organizers find talent for events. Explore artist profiles, send booking requests, publish opportunities and propose creative collaborations.</p><p style="font-size:16px;line-height:1.8;">Artists manage their own requests, applications and portfolios. Organizers track their events and bookings. Artists confirm availability and share a final quote. Organizers can then complete payment and manage their confirmed bookings in one place.</p>
+  </div></section>
+  ${renderFooter()}`;
+}
+
+/* ---------------- AUTH ---------------- */
+function renderLogin(){return `<div class="auth-shell"><div class="auth-card"><span class="eyebrow">Your creative workspace</span><h2 style="margin-top:14px">Welcome back</h2><p class="sub">Log in to connect, collaborate and manage your bookings.</p>${authFeedback()}<div class="f-group"><label for="login-email">Email address</label><input type="email" id="login-email" autocomplete="username" maxlength="254" value="${escapeRecord(state.authEmail)}" required placeholder="you@example.com"></div><div class="f-group"><label for="login-pass">Password</label><input type="password" id="login-pass" autocomplete="current-password" required></div><button class="btn btn-coral btn-block" data-action="do-login" data-auth-submit>Log in</button><p class="form-foot"><a href="#forgot" data-action="nav" data-view="forgot">Forgot password?</a></p><p class="form-foot"><a href="#verify-email" data-action="nav" data-view="verify-email">Need to verify your email?</a></p><p class="form-foot">New to TalentSphere? <a href="#register" data-action="nav" data-view="register">Create an account</a></p></div></div>`;}
+function renderEmailVerification(){
+ return `<div class="auth-shell"><div class="auth-card"><span class="eyebrow">Email verification</span><h2 style="margin-top:14px">Verify your email</h2><p class="sub">Enter the six-digit code from your latest TalentSphere email. Codes expire after 10 minutes.</p>${authFeedback()}<div class="f-group"><label for="verify-email">Email address</label><input id="verify-email" type="email" autocomplete="email" maxlength="254" value="${escapeRecord(state.verification.email||state.authEmail)}" required></div><div class="f-group"><label for="verification-code">Verification code</label><input id="verification-code" class="verification-code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" aria-describedby="code-hint" required placeholder="000000"><p id="code-hint" class="field-help">Use the latest code. Requesting a replacement invalidates the previous code.</p></div><button class="btn btn-coral btn-block" data-action="verify-code" data-auth-submit>Verify email</button><button class="btn btn-outline-paper btn-block" style="margin-top:12px;min-height:46px" data-action="resend-code" data-auth-submit>Send a new code</button><p class="field-help">Check spam or junk folders. If delivery fails, your account remains saved and you can safely retry.</p><p class="form-foot"><a href="#login" data-action="nav" data-view="login">Back to log in</a></p></div></div>`;
+}
+function renderAccountStatus(){return `<div class="auth-shell"><div class="auth-card"><span class="eyebrow">Account status</span><h2 style="margin-top:14px">Your account needs attention</h2><p class="sub" role="status">${escapeRecord(state.approvalMessage||'Log in to check your account status.')}</p><p class="field-help">Email verification, administrator approval and the artist profile badge are separate. Verification does not override an approval decision.</p><button class="btn btn-coral btn-block" data-action="nav" data-view="login">Back to log in</button></div></div>`;}
+
+function renderForgot(){return `<div class="auth-shell"><div class="auth-card"><span class="eyebrow">Account recovery</span><h2>Forgot your password?</h2><p class="sub">Enter your registered email. We will send a link that expires in 30 minutes.</p>${authFeedback()}<div class="f-group"><label for="forgot-email">Email address</label><input id="forgot-email" type="email" maxlength="254" required autocomplete="email" value="${escapeRecord(state.authEmail)}" placeholder="you@example.com"></div><button class="btn btn-coral btn-block" data-action="do-forgot" data-auth-submit>Send reset link</button><p class="field-help">Check your inbox and spam folder. Only the latest reset link will work.</p><p class="form-foot"><a href="#login" data-action="nav" data-view="login">Back to log in</a></p></div></div>`;}
+function renderReset(){const valid=/^[a-f0-9]{64}$/.test(state.params.id||'');return `<div class="auth-shell"><div class="auth-card"><span class="eyebrow">Account recovery</span><h2>Choose a new password</h2>${authFeedback()}${valid?'<p class="sub">Use at least 8 characters. After saving, log in with your new password.</p><div class="f-group"><label for="reset-password">New password</label><input id="reset-password" type="password" minlength="8" required autocomplete="new-password"></div><div class="f-group"><label for="reset-confirm">Confirm new password</label><input id="reset-confirm" type="password" minlength="8" required autocomplete="new-password"></div><button class="btn btn-coral btn-block" data-action="reset-password" data-auth-submit>Update password</button>':'<p class="sub" role="alert">This reset link is invalid. Request a new link to continue.</p>'}<p class="form-foot"><a href="#forgot" data-action="nav" data-view="forgot">Request a new reset link</a></p></div></div>`;}
+
+function renderRegister(){
+  const r = state.regRole;
+  return `
+  <div class="auth-shell"><div class="auth-card fade-in">
+    <h2>Join TalentSphere</h2><p class="sub">What are you here to do?</p>
+    ${authFeedback()}<div class="role-pick">
+      <button class="role-opt ${r==='artist'?'active':''}" data-action="setregrole" data-role="artist"><div class="ic">${icon('palette',22,1.5)}</div><b>I'm a Creative Professional</b><span>Get discovered &amp; booked</span></button>
+      <button class="role-opt ${r==='organizer'?'active':''}" data-action="setregrole" data-role="organizer"><div class="ic">${icon('calendar',22,1.5)}</div><b>I'm an Event Organizer</b><span>Find &amp; book talent</span></button>
+    </div>
+    <div class="field-row2"><div class="f-group"><label>${r==='organizer'?'Organization / Name':'Full name'}</label><input type="text" id="reg-name" placeholder="${r==='organizer'?'Your organization or full name':'Your full name'}"></div>
+    <div class="f-group"><label>Email</label><input type="email" id="reg-email" autocomplete="email" maxlength="254" value="${escapeRecord(state.authEmail)}" placeholder="you@example.com"></div></div>
+    <div class="field-row2">
+      <div class="f-group"><label>${r==='organizer'?'Organization type':'Creative category'}</label>
+        <select id="reg-cat">${r==='organizer'
+          ? ["Corporate","College / University","Wedding Planner","Music Festival","Community / NGO","Individual"].map(o=>`<option>${o}</option>`).join("")
+          : CATEGORIES.map(c=>`<option>${c.name}</option>`).join("")}</select>
+      </div>
+      <div class="f-group"><label>Location</label><input type="text" id="reg-loc" placeholder="City, Country"></div>
+    </div>
+    <div class="f-group"><label>Password</label><input type="password" minlength="8" autocomplete="new-password" id="reg-pass" placeholder="Create a password"></div>
+    <button class="btn btn-coral btn-block" data-action="do-register" data-auth-submit>Create account &amp; verify email</button><p class="field-help">We will send a six-digit verification code. You will log in after confirming your email.</p>
+    <p class="form-foot">Already have an account? <a href="#" data-action="nav" data-view="login">Log in</a></p>
+  </div></div>`;
+}
+
+/* ---------------- EXPLORE TALENT ---------------- */
+function renderExplore(){
+  const f = state.explore;
+  if(f.maxPrice===null)f.maxPrice=Math.max(40000,...ARTISTS.map(a=>a.price));
+  let list = ARTISTS.filter(a=>{
+    if(f.category!=="All" && a.category!==f.category) return false;
+    if(f.location!=="All" && a.location!==f.location) return false;
+    if(f.availability&&f.availability!=="All"&&a.availability!==f.availability)return false;
+    if(a.price>f.maxPrice) return false;
+    if(f.q && !(a.name.toLowerCase().includes(f.q.toLowerCase())||a.skills.join(" ").toLowerCase().includes(f.q.toLowerCase())||a.category.toLowerCase().includes(f.q.toLowerCase()))) return false;
+    return true;
+  });
+  if(f.sort==="Highest Rated") list = [...list].sort((a,b)=>b.rating-a.rating);
+  else if(f.sort==="Most Experienced") list = [...list].sort((a,b)=>b.exp-a.exp);
+  else if(f.sort==="Price: Low to High") list = [...list].sort((a,b)=>a.price-b.price);
+  else if(f.sort==="Newest") list = [...list].sort((a,b)=>b.joined.localeCompare(a.joined));
+
+  const page=Math.min(f.page||1,Math.max(1,Math.ceil(list.length/12)));
+  const locations = ["All",...new Set(ARTISTS.map(a=>a.location))];
+
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Explore Talent</span><h1 style="margin-top:10px;">Discover your next creative collaborator.</h1><p>Find creative professionals by skill, location, budget and availability.</p></div></div>
+  <div class="wrap layout-2col">
+    <button class="btn btn-outline-paper mobile-filter-toggle" data-action="toggle-filters" aria-expanded="${state.filtersOpen}" aria-controls="artist-filters">${icon('sliders',16)} ${state.filtersOpen?'Hide filters':'Search filters'}</button>
+    <aside id="artist-filters" class="filters-card ${state.filtersOpen?'open':''}">
+      <h4>Filters</h4>
+      <div class="f-group"><label>Category</label>
+        <select data-bind="explore-category">
+          <option ${f.category==='All'?'selected':''}>All</option>
+          ${CATEGORIES.map(c=>`<option ${f.category===c.name?'selected':''}>${c.name}</option>`).join("")}
+        </select>
+      </div>
+      <div class="f-group"><label>Location</label>
+        <select data-bind="explore-location">${locations.map(l=>`<option ${f.location===l?'selected':''}>${l}</option>`).join("")}</select>
+      </div>
+      <div class="f-group"><label>Max price: ${fmtMoney(f.maxPrice)}</label>
+        <input type="range" min="0" max="${Math.max(40000,...ARTISTS.map(a=>a.price),f.maxPrice)}" step="1000" value="${f.maxPrice}" data-bind="explore-price" style="width:100%;">
+      </div>
+      <div class="f-group"><label>Availability</label><select data-bind="explore-availability">${['All',...new Set(ARTISTS.map(a=>a.availability))].map(v=>`<option ${f.availability===v?'selected':''}>${v}</option>`).join('')}</select></div>
+      <button class="btn btn-outline-paper btn-block" data-action="reset-filters">Reset filters</button>
+    </aside>
+    <div>
+      <div class="searchbar"><span class="sic">${icon('search',16)}</span><input type="text" placeholder="Search artists, skills, genres…" value="${f.q}" aria-label="Search artists" data-bind="explore-q"></div>
+      <div class="results-topbar">
+        <span class="results-count">${list.length} artist${list.length!==1?'s':''} found</span>
+        <select aria-label="Sort artists" data-bind="explore-sort" style="padding:9px 12px;border-radius:10px;border:1.5px solid var(--line-paper);font-size:13.5px;">
+          ${["Recommended","Highest Rated","Most Experienced","Price: Low to High","Newest"].map(s=>`<option ${f.sort===s?'selected':''}>${s}</option>`).join("")}
+        </select>
+      </div>
+      <div class="active-filters" aria-label="Active filters">${[['q',f.q],['category',f.category!=='All'?f.category:''],['location',f.location!=='All'?f.location:''],['availability',f.availability!=='All'?f.availability:''],['maxPrice',f.maxPrice<Math.max(40000,...ARTISTS.map(a=>a.price))?'Up to '+fmtMoney(f.maxPrice):'']].filter(([,value])=>value).map(([key,value])=>`<button class="filter-token" data-action="clear-filter" data-filter="${key}" aria-label="Remove filter ${escapeRecord(value)}">${escapeRecord(value)} &times;</button>`).join('')}</div>
+      ${list.length>12?`<div class="pagination"><button class="btn btn-sm" data-action="explore-page" data-page="${page-1}" ${page===1?'disabled':''}>Previous</button><span>Page ${page} of ${Math.ceil(list.length/12)}</span><button class="btn btn-sm" data-action="explore-page" data-page="${page+1}" ${page*12>=list.length?'disabled':''}>Next</button></div>`:''}
+      ${list.length? `<div class="card-row">${list.slice((page-1)*12,page*12).map((a,i)=>artistCard(a,i)).join("")}</div>` :
+        `<div class="empty-state"><div class="ic">${icon('search',36,1.4)}</div><h4>No artists match your filters</h4><p>Try widening your price range or clearing a filter.</p><button class="btn btn-coral" data-action="reset-filters">Reset filters</button></div>`}
+    </div>
+  </div>`;
+}
+
+/* ---------------- ARTIST PROFILE ---------------- */
+function renderArtistProfile(){
+ const a=findArtist(state.params.id);if(!a)return `<div class="empty-state"><h2>Artist not found</h2><p>This profile may no longer be available.</p><button class="btn btn-coral" data-action="nav" data-view="explore">Explore artists</button></div>`;
+ const reviews=a.isExample?[]:REVIEWS.filter(r=>r.artistId===a.id),similar=ARTISTS.filter(x=>x.category===a.category&&x.id!==a.id).slice(0,2);
+ return `<div class="profile-hero"><div class="profile-cover"></div><div class="wrap"><div class="profile-head"><div class="avatar profile-avatar">${profilePicture(a)}</div><div><span class="eyebrow">${a.category}</span><h1 class="profile-name">${a.name}</h1><div class="profile-meta-row"><span>${icon('pin',14)} ${a.location}</span>${a.verified&&!a.isExample?`<span class="verified">${icon('checkcircle',14)} Admin-verified profile</span>`:''}</div></div><div class="profile-actions"><button class="btn btn-outline-paper" data-action="collab-request" data-id="${a.id}">Collaborate</button><button class="btn btn-coral" data-action="book" data-id="${a.id}">Request a booking</button></div></div></div></div>
+ <div class="wrap pg-2col"><div class="profile-content"><section class="panel portfolio-panel"><h3>Selected work</h3><div class="portfolio-grid">${(a.media||[]).map((url,i)=>`<button class="media-preview" data-action="preview-media" data-id="${a.id}" data-index="${i}" aria-label="Preview portfolio image ${i+1}"><img class="portfolio-image" src="${url}" alt="${a.name} portfolio work ${i+1}" loading="lazy" decoding="async" width="640" height="480"></button>`).join('')||`<div class="portfolio-empty">${icon('image',28)}<p>This artist has not added portfolio images yet.</p></div>`}</div></section><section class="panel"><h3>About the artist</h3><p style="color:var(--text-paper-mute);font-size:14px;line-height:1.9">${a.bio||'Contact this artist to learn more about their work and services.'}</p><div style="margin-top:20px">${a.skills.map(skill=>`<span class="skill-tag">${skill}</span>`).join('')}</div></section>${reviews.length?`<section class="panel"><h3>Reviews</h3>${reviews.map(r=>`<div class="review-item"><b>${r.author}</b><span style="float:right;color:var(--violet)" aria-label="${r.rating} out of 5 stars">${stars(r.rating)}</span><p style="font-size:14px;margin-top:10px;color:var(--text-paper-mute)">${r.text}</p></div>`).join('')}</section>`:''}</div><aside><div class="sidepanel-card"><span class="eyebrow">Work together</span><h4 style="margin-top:14px">Services &amp; pricing</h4><div class="price-box"><div class="amt">${fmtMoney(a.price)}</div><div class="per">Starting price per event</div></div>${a.availability?`<div class="summary-line"><span>Availability</span><b>${a.availability}</b></div>`:''}<div class="summary-line"><span>Experience</span><b>${a.exp} years</b></div><button class="btn btn-coral btn-block" style="margin-top:24px" data-action="book" data-id="${a.id}">Request a booking</button><p style="font-size:12px;color:var(--text-paper-mute);margin-top:14px">Share your details first. The artist will review your request. Payment through Razorpay becomes available after the artist accepts your request.</p></div>${similar.length?`<div class="sidepanel-card"><h4>In the same creative world</h4>${similar.map(other=>`<div class="list-row"><div class="lr-main"><div class="lr-title">${other.name}</div><div class="lr-sub">${other.location}</div></div><button class="btn btn-sm btn-outline-paper" data-action="nav" data-view="artist-profile" data-id="${other.id}">View</button></div>`).join('')}</div>`:''}</aside></div>`;
+}
+
+function renderEvents(){
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Events</span><h1 style="margin-top:10px;">Find events looking for talent.</h1><p>From open mics to full-scale festivals — discover opportunities to perform.</p></div></div>
+  <div class="wrap" style="padding:44px 0 90px;">
+    <div class="results-topbar"><span class="results-count">${EVENTS.length} event${EVENTS.length===1?'':'s'} listed</span>
+      ${state.role==='organizer'?`<button class="btn btn-coral" data-action="nav" data-view="create-event">+ Create event</button>`:''}
+    </div>
+    <div class="card-row cols3">${EVENTS.map((e,i)=>eventCard(e,i)).join("")||`<div class="empty-state"><div class="ic">${icon('calendar',32)}</div><h3>The next opportunity starts here.</h3><p>No events have been published yet. Organizers can create an event and invite the community to apply.</p></div>`}</div>
+  </div>`;
+}
+
+function renderEventDetail(){
+  const e = findEvent(state.params.id);
+  if(!e)return `<div class="wrap empty-state"><span class="eyebrow">Event unavailable</span><h2 style="margin-top:16px">This opportunity could not be found.</h2><p>Explore other events to find your next performance.</p><button class="btn btn-coral" data-action="nav" data-view="events">Browse events</button></div>`;
+
+  const applied = state.role==='artist' && APPLICATIONS.some(ap=>ap.eventId===e.id && ap.artistId===(state.user&&state.user.artistId));
+  return `
+  <div class="event-detail-hero" style="height:320px;position:relative;"><img class="event-detail-image" src="${eventImage(e)}" alt="${e.category} event atmosphere" width="1200" height="720" decoding="async">
+    <div class="wrap" style="position:relative;height:100%;">
+      <div style="position:absolute;bottom:24px;left:32px;color:#fff;">
+        <span class="pill" style="background:rgba(20,18,26,.5);color:#fff;">${e.category}</span>
+        <h1 style="margin-top:14px;font-size:clamp(24px,3.4vw,36px);">${e.name}</h1>
+        <p style="margin-top:6px;opacity:.9;">by ${e.organizer}</p>
+      </div>
+    </div>
+  </div>
+  <div class="wrap pg-2col">
+    <div>
+      <div class="panel"><h3>About this event</h3>
+        <p style="font-size:14.5px;line-height:1.7;color:var(--text-paper-mute);">${e.description||'Contact the organizer through an application to discuss event requirements.'}</p>
+      </div>
+      <div class="panel"><h3>Requirements</h3>
+        <div class="list-row"><span style="width:120px;color:var(--text-paper-mute);font-size:13px;">Talent needed</span><span style="font-weight:600;font-size:13.5px;">${e.talent}</span></div>
+        <div class="list-row"><span style="width:120px;color:var(--text-paper-mute);font-size:13px;">Number of slots</span><span style="font-weight:600;font-size:13.5px;">${e.numArtists} artists</span></div>
+        <div class="list-row"><span style="width:120px;color:var(--text-paper-mute);font-size:13px;">Budget</span><span style="font-weight:600;font-size:13.5px;">${e.budget} total</span></div>
+        <div class="list-row"><span style="width:120px;color:var(--text-paper-mute);font-size:13px;">Application deadline</span><span style="font-weight:600;font-size:13.5px;">${fmtDate(e.deadline)}</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sidepanel-card">
+        <h4>Event details</h4>
+        <div class="list-row"><span class="lr-main"><span class="lr-sub">Date</span><div class="lr-title">${fmtDate(e.date)}</div></span></div>
+        <div class="list-row"><span class="lr-main"><span class="lr-sub">Time</span><div class="lr-title">${e.time}</div></span></div>
+        <div class="list-row"><span class="lr-main"><span class="lr-sub">Venue</span><div class="lr-title">${e.venue}</div></span></div>
+        <div class="list-row"><span class="lr-main"><span class="lr-sub">Location</span><div class="lr-title">${e.location}</div></span></div>
+        ${e.deadline<new Date().toISOString().slice(0,10)?'<p>Applications closed</p>':state.role==='artist' ?
+          (applied? `<button class="btn btn-block btn-outline-paper" disabled style="margin-top:14px;">${icon('check',14)} Application submitted</button>`
+          : `<button class="btn btn-amber btn-block" style="margin-top:14px;" data-action="apply" data-id="${e.id}">Apply Now</button>`)
+          : `<button class="btn btn-amber btn-block" style="margin-top:14px;" data-action="apply-prompt">Apply Now</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- CREATE EVENT ---------------- */
+function renderCreateEvent(){
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Organizer tools</span><h1 style="margin-top:10px;">Create a new event</h1><p>Publish an event and start receiving artist applications.</p></div></div>
+  <div class="wrap" style="max-width:720px;padding:44px 0 100px;">
+    <div class="panel">
+      <div class="field-row2">
+        <div class="f-group"><label>Event name</label><input type="text" id="ev-name" placeholder="e.g. Summer Music Festival"></div>
+        <div class="f-group"><label>Category</label><select id="ev-cat">${["Cultural Fest","Corporate Event","Music Festival","Comedy Show","Wedding","Open Mic","Dance Showcase"].map(c=>`<option>${c}</option>`).join("")}</select></div>
+      </div>
+      <div class="f-group"><label>Description</label><textarea id="ev-desc" placeholder="Tell artists what this event is about…"></textarea></div>
+      <div class="field-row2">
+        <div class="f-group"><label>Date</label><input type="date" id="ev-date"></div>
+        <div class="f-group"><label>Time</label><input type="text" id="ev-time" placeholder="e.g. 6:00 PM"></div>
+      </div>
+      <div class="field-row2">
+        <div class="f-group"><label>Location</label><input type="text" id="ev-loc" placeholder="City, Country"></div>
+        <div class="f-group"><label>Venue</label><input type="text" id="ev-venue" placeholder="Venue name"></div>
+      </div>
+      <div class="field-row2">
+        <div class="f-group"><label>Required artist category</label><select id="ev-req">${CATEGORIES.map(c=>`<option>${c.name}</option>`).join("")}</select></div>
+        <div class="f-group"><label>Number of artists</label><input type="number" id="ev-num" value="3" min="1"></div>
+      </div>
+      <div class="field-row2">
+        <div class="f-group"><label>Budget (₹)</label><input type="text" id="ev-budget" placeholder="e.g. 1,50,000"></div>
+        <div class="f-group"><label>Application deadline</label><input type="date" id="ev-deadline"></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;">
+
+        <button class="btn btn-coral" data-action="publish-event">Publish event</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- APPLY MODAL VIEW (as page) ---------------- */
+function renderApplyForm(){
+  const e = findEvent(state.params.id);
+  if(!e) return renderEvents();
+  return `
+  <div class="booking-shell fade-in">
+    <div class="breadcrumb"><a href="#" data-action="nav" data-view="event-detail" data-id="${e.id}">← Back to event</a></div>
+    <h2 style="margin-bottom:6px;">Apply to ${e.name}</h2>
+    <p style="color:var(--text-paper-mute);font-size:14px;margin-bottom:28px;">Tell the organizer why you're a great fit.</p>
+    <div class="panel">
+      <div class="f-group"><label>Message / proposal</label><textarea id="app-msg" placeholder="Introduce yourself and describe what you'll bring to this event…"></textarea></div>
+      <div class="field-row2">
+        <div class="f-group"><label>Expected fee (₹)</label><input type="number" id="app-fee" placeholder="e.g. 15000"></div>
+        <div class="f-group"><label>Availability</label><input type="text" id="app-avail" placeholder="e.g. Fully available"></div>
+      </div>
+      <button class="btn btn-amber btn-block" data-action="submit-application" data-id="${e.id}">Submit application</button>
+    </div>
+  </div>`;
+}
+
+/* ---------------- BOOKING FLOW ---------------- */
+function renderBookingForm(){
+  const a = findArtist(state.params.id);
+  if(!a) return renderExplore();
+  return `
+  <div class="booking-shell fade-in">
+    <div class="breadcrumb"><a href="#" data-action="nav" data-view="artist-profile" data-id="${a.id}">← Back to profile</a></div>
+    <span class="eyebrow">Booking request</span><h2 style="margin:12px 0">Request ${a.name}</h2><p style="color:var(--text-paper-mute);margin-bottom:24px">Tell the artist about your event. This sends a request for review, rather than confirming a booking. Payment becomes available after artist acceptance.</p><div class="request-summary"><h3>Request summary</h3><div class="summary-line"><span>Artist</span><b>${a.name}</b></div><div class="summary-line"><span>Starting artist fee</span><b>${fmtMoney(a.price)} / event</b></div><div class="summary-line"><span>Platform fee</span><b>${fmtMoney(0)}</b></div><div class="summary-line total"><span>Quoted total</span><b>${fmtMoney(a.price)}</b></div><p style="font-size:12px;color:var(--text-paper-mute);margin-top:12px">Nothing is charged now. After the artist accepts a final quote, pay through Razorpay to confirm your booking.</p></div>
+    <div class="panel">
+      <div class="f-group"><label>Event / occasion name</label><input type="text" id="bk-event" placeholder="e.g. Product Launch Evening"></div>
+      <div class="field-row2">
+        <div class="f-group"><label>Date</label><input type="date" id="bk-date" min="${new Date().toISOString().slice(0,10)}"></div>
+        <div class="f-group"><label>Duration</label><select id="bk-duration"><option>1 hr</option><option>2 hrs</option><option selected>3 hrs</option><option>4 hrs</option><option>Full day</option></select></div>
+      </div>
+      <div class="f-group"><label>Location</label><input type="text" id="bk-loc" placeholder="Venue, city"></div>
+      <div class="f-group"><label>Notes for the artist (optional)</label><textarea id="bk-notes" placeholder="Anything the artist should know…"></textarea></div>
+      <button class="btn btn-amber btn-block" data-action="send-booking-request" data-id="${a.id}">Send booking request</button>
+    </div>
+  </div>`;
+}
+
+function renderBookingReview(){const b=state.bookingDraft;if(!b)return renderOrganizerBookings();return `<div class="booking-shell"><div class="panel"><h2>Request sent</h2><p>${b.eventName} &middot; ${fmtDate(b.date)}</p><p>Your request is pending. The artist can accept or decline it from their dashboard.</p><button class="btn btn-coral" data-action="nav" data-view="organizer-bookings">Track your bookings</button></div></div>`;}
+
+function renderPayment(){
+ const detail=PAYMENT_DETAIL;if(!detail)return `<div class="empty-state"><h2>Payment details are loading</h2></div>`;
+ const {booking:b,order,transactions,displayStatus}=detail;
+ return `<div class="booking-shell payment-shell"><div class="breadcrumb"><button class="btn btn-sm btn-outline-paper" data-action="nav" data-view="organizer-bookings">Back to bookings</button></div><span class="eyebrow">${detail.mode==='test'?'Test Mode / No real money':'Secure payment / Razorpay'}</span><h1>Booking payment</h1><p class="section-sub">Your booking is confirmed only after Razorpay capture is verified by the server.</p><div class="panel" style="margin-top:24px"><div class="payment-heading"><h3>${b.eventName}</h3>${paymentBadge(displayStatus)}</div><div class="summary-line"><span>Booking reference</span><b>${b.id}</b></div><div class="summary-line"><span>Artist</span><b>${detail.artistName}</b></div><div class="summary-line"><span>Booking status</span><b>${b.status}</b></div><div class="summary-line"><span>${b.status==='Pending'?'Provisional artist quote':'Final artist fee'}</span><b>${fmtPaise(b.artistFeePaise)}</b></div><div class="summary-line"><span>Platform fee</span><b>${fmtPaise(b.platformFeePaise)}</b></div><div class="summary-line total"><span>Total / INR</span><b>${fmtPaise(b.finalAmountPaise)}</b></div>${order?`<div class="payment-reference"><p>Razorpay order: <code>${order.providerOrderId||'Creation not yet confirmed'}</code></p><p>Last provider check: ${order.reconciledAt?new Date(order.reconciledAt).toLocaleString():'Not checked yet'}</p>${order.sessionExpiresAt?`<p>Checkout session expiry: ${new Date(order.sessionExpiresAt).toLocaleString()}. This is not proof that a pending payment failed.</p>`:''}</div>`:''}
+ ${detail.warning?`<div class="payment-alert" role="status">${detail.warning}</div>`:''}${order?.reviewReason?`<div class="payment-alert" role="alert">${order.reviewReason} Contact the administrator with your booking and transaction references. Do not pay again.</div>`:''}
+ ${!detail.configured?'<div class="payment-alert">Checkout is disabled until the administrator configures Razorpay credentials. Saved transaction history remains visible.</div>':''}
+ ${detail.canPay?`<div class="upi-guidance"><h3>UPI, cards &amp; more</h3><p>On desktop, choose UPI in Razorpay Checkout to scan the provider-generated QR when available. On mobile, choose one of the UPI apps offered by Razorpay.</p><p>${detail.mode==='test'?'Test Mode simulates payments. Real UPI Intent and QR scanning require Live Mode and account eligibility; do not scan a test QR with a real payment app.':'Available payment methods and QR expiry are controlled by Razorpay for this account and device.'}</p></div><button class="btn btn-coral btn-block" data-action="start-checkout" data-id="${b.id}" ${!detail.configured||checkoutInProgress||detail.warning?'disabled':''}>${checkoutInProgress?'Checkout in progress...':'Pay '+fmtPaise(b.finalAmountPaise)+' securely'}</button>`:''}
+ ${b.paymentStatus==='authorized'?'<p class="request-note">Payment is authorized, not captured. Please wait and refresh; do not initiate another payment.</p>':''}
+ <button class="btn btn-outline-paper btn-block" style="margin-top:12px" data-action="refresh-payment" ${checkoutInProgress?'disabled':''}>Refresh verified status</button><p class="payment-disclaimer">Funds received by the platform are not an artist payout. A closed or expired Checkout may still produce a late payment; the server checks the existing order before retrying.</p></div>
+ <div class="panel"><h3>Transactions &amp; receipts</h3>${transactions.length?transactions.map(t=>`<div class="payment-transaction"><div><b>${fmtPaise(t.amountPaise)}</b> ${paymentBadge(t.status)}<p><code>${t.providerPaymentId}</code></p><p>${t.method||'Method pending'}${t.failureMessage?' / '+t.failureMessage:''}${t.refundedPaise?' / Refunded '+fmtPaise(t.refundedPaise):''}</p></div>${t.capturedAt?`<button class="btn btn-sm btn-outline-paper" data-action="nav" data-view="receipt" data-id="${t.providerPaymentId}">View receipt</button>`:''}</div>`).join(''):'<p class="payment-disclaimer">No provider transaction has been verified yet.</p>'}</div></div>`;
+}
+function renderPaymentHistory(){return `<div class="page-hero"><div class="wrap"><span class="eyebrow">Your payments</span><h1>Payment history</h1><p>Saved Razorpay references and verified transaction details. Test transactions are labeled.</p></div></div><div class="wrap" style="padding:36px 0 80px"><div class="panel">${PAYMENT_HISTORY.length?`<table class="tbl"><thead><tr><th>Booking</th><th>Amount / mode</th><th>Payment</th><th>Provider reference</th><th></th></tr></thead><tbody>${PAYMENT_HISTORY.map(p=>`<tr><td>${p.eventName}<br><small>${p.bookingId}</small></td><td>${fmtPaise(p.amountPaise)}<br>${p.mode==='test'?'Test Mode':'Live Mode'}</td><td>${paymentBadge(p.paymentStatus)}</td><td><code>${p.providerOrderId||p.receipt}</code></td><td><button class="btn btn-sm btn-outline-paper" data-action="nav" data-view="payment" data-id="${p.bookingId}">Details &amp; receipts</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty-state"><h3>No payment orders yet</h3><p>Accepted bookings will offer a Pay Now action. Your payment history will appear here once Checkout is prepared.</p><button class="btn btn-coral" data-action="nav" data-view="organizer-bookings">View bookings</button></div>'}</div></div>`;}
+function renderReceipt(){
+ const r=PAYMENT_RECEIPT;if(!r)return '<div class="empty-state"><h2>Receipt unavailable</h2></div>';
+ const t=r.transaction;
+ return `<div class="booking-shell receipt-panel"><span class="eyebrow">${r.mode==='test'?'Test payment receipt / No real money':'Payment receipt'}</span><h1>Capture receipt</h1><p class="payment-disclaimer">A saved record of provider capture. This is not a tax invoice or a confirmation of payout to the artist.</p><div class="panel" style="margin-top:24px"><div class="summary-line"><span>Reference</span><b>${r.receiptReference}</b></div><div class="summary-line"><span>Booking</span><b>${r.bookingId}</b></div><div class="summary-line"><span>Event / artist</span><b>${r.eventName}<br>${r.artistName}</b></div><div class="summary-line"><span>Provider order</span><code>${r.providerOrderId}</code></div><div class="summary-line"><span>Provider payment</span><code>${t.providerPaymentId}</code></div><div class="summary-line"><span>Booking status</span><b>${r.bookingStatus}</b></div><div class="summary-line"><span>Booking payment status</span>${paymentBadge(r.paymentStatus)}</div><div class="summary-line"><span>Transaction status</span>${paymentBadge(t.status)}</div><div class="summary-line"><span>Capture verified at</span><b>${new Date(t.capturedAt).toLocaleString()}</b></div><div class="summary-line total"><span>Captured / INR</span><b>${fmtPaise(t.amountPaise)}</b></div><div class="summary-line"><span>Refunded</span><b>${fmtPaise(t.refundedPaise)}</b></div><p class="payment-disclaimer">${r.payoutStatus}</p><button class="btn btn-coral" data-action="print-receipt">Print / save receipt</button><button class="btn btn-outline-paper" data-action="nav" data-view="payment" data-id="${r.bookingId}">Back to payment</button></div></div>`;
+}
+function renderAdminPayments(){
+ return `<div class="page-hero"><div class="wrap"><span class="eyebrow">Admin / Payment operations</span><h1>Payments &amp; exceptions</h1><p>Provider captures are platform receipts, not artist payouts. Review cancellations, refunds and unresolved orders in the Razorpay Dashboard.</p></div></div><div class="wrap" style="padding:36px 0 80px"><div class="panel"><div class="payment-admin-filters"><div class="f-group"><label for="pay-filter-status">Order or transaction status</label><select id="pay-filter-status">${['','creating','created','pending','authorized','failed','captured','review_required','creation_unknown','partially_refunded','refunded'].map(v=>`<option value="${v}" ${paymentAdminFilters.status===v?'selected':''}>${v||'All statuses'}</option>`).join('')}</select></div><div class="f-group"><label for="pay-filter-mode">Mode</label><select id="pay-filter-mode">${['','test','live'].map(v=>`<option value="${v}" ${paymentAdminFilters.mode===v?'selected':''}>${v||'All modes'}</option>`).join('')}</select></div><div class="f-group"><label for="pay-filter-q">Booking, order or transaction reference</label><input id="pay-filter-q" value="${escapeRecord(paymentAdminFilters.q)}"></div><button class="btn btn-coral" data-action="filter-payments">Apply filters</button><button class="btn btn-outline-paper" data-action="reset-payment-filters">Reset</button></div><p>${ADMIN_PAYMENTS.total} payment order${ADMIN_PAYMENTS.total===1?'':'s'}</p><table class="tbl"><thead><tr><th>Booking / mode</th><th>Amount / status</th><th>Provider references</th><th>Exception / review log</th><th>Actions</th></tr></thead><tbody>${ADMIN_PAYMENTS.orders.map(p=>`<tr><td>${p.eventName}<br><small>${p.bookingId}<br>${p.mode.toUpperCase()} / ${p.bookingStatus}</small></td><td>${fmtPaise(p.amountPaise)}<br>${paymentBadge(p.status)}</td><td><code>${p.providerOrderId||'Order unresolved'}</code><br><small>Receipt ${p.receipt}</small>${p.transactions.map(t=>`<p><code>${t.providerPaymentId}</code><br>${paymentBadge(t.status)} ${fmtPaise(t.amountPaise)}${t.refundedPaise?'<br>Refunded '+fmtPaise(t.refundedPaise):''}</p>`).join('')}</td><td>${p.reviewReason||'No exception recorded'}${p.reviewLog.map(log=>`<p><small>${log.createdAt}: ${log.note}</small></p>`).join('')}</td><td><button class="btn btn-sm btn-outline-paper" data-action="admin-reconcile-payment" data-id="${p.bookingId}">Reconcile</button><div class="f-group"><label for="review-${p.id}">Review note</label><textarea id="review-${p.id}" maxlength="2000"></textarea></div><button class="btn btn-sm btn-outline-paper" data-action="payment-review-note" data-id="${p.bookingId}" data-record="${p.id}">Save note</button></td></tr>`).join('')}</tbody></table><div class="pagination"><button class="btn btn-sm" data-action="payment-admin-page" data-page="${ADMIN_PAYMENTS.page-1}" ${ADMIN_PAYMENTS.page<=1?'disabled':''}>Previous</button><span>Page ${ADMIN_PAYMENTS.page}</span><button class="btn btn-sm" data-action="payment-admin-page" data-page="${ADMIN_PAYMENTS.page+1}" ${ADMIN_PAYMENTS.page*25>=ADMIN_PAYMENTS.total?'disabled':''}>Next</button></div></div></div>`;
+}
+
+function renderConfirmation(){return renderOrganizerBookings();}
+
+function myApplications(){return APPLICATIONS;}
+function myBookings(){return BOOKINGS;}
+
+function dashboardHeading(role,title,description,action=''){
+ const today=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+ return `<div class="workspace-context"><span>Workspace <span aria-hidden="true">/</span> ${role}</span><time datetime="${new Date().toISOString().slice(0,10)}">${today}</time></div><div class="dash-greet"><div><h1>${title}</h1><p>${description}</p></div>${action}</div>`;
+}
+function renderArtistDashboard(){
+  const upcomingBookings = BOOKINGS.filter(b=>["Pending","Accepted","Confirmed"].includes(b.status)&&b.date>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.date.localeCompare(b.date));
+  const pendingApps = APPLICATIONS.filter(a=>a.status==="Pending");
+  const pendingCollabs = COLLABORATIONS.filter(c=>c.status==="Pending"&&c.toId===state.user?.artistId);
+  const earnings = BOOKINGS.filter(b=>b.status==="Completed").reduce((s,b)=>s+b.fee,0);
+  return `
+  <div class="dash-shell"><div class="wrap dash-top">
+    ${dashboardHeading('Artist','Overview','Your bookings, applications and collaborations.', '<button class="btn btn-outline-paper" data-action="nav" data-view="artist-portfolio">Edit profile</button>')}
+    <div class="stat-row">
+      <div class="stat-card"><div class="lbl">Incoming requests</div><div class="val">${BOOKINGS.filter(b=>b.status==='Pending').length}</div></div>
+      <div class="stat-card"><div class="lbl">Upcoming bookings</div><div class="val">${upcomingBookings.length}</div><div class="delta">Next: ${upcomingBookings[0]? fmtDate(upcomingBookings[0].date):'—'}</div></div>
+      <div class="stat-card"><div class="lbl">Pending applications</div><div class="val">${pendingApps.length}</div><div class="delta" style="color:var(--amber-dim);">Awaiting review</div></div>
+      <div class="stat-card"><div class="lbl">Completed booking value</div><div class="val">${fmtMoney(earnings)}</div><div class="delta">Lifetime</div></div>
+      <div class="stat-card"><div class="lbl">Completed bookings</div><div class="val">${BOOKINGS.filter(b=>b.status==='Completed').length}</div><div class="delta">Past events</div></div>
+      <div class="stat-card"><div class="lbl">Collaboration requests</div><div class="val">${pendingCollabs.length}</div><div class="delta">Awaiting your response</div></div>
+    </div>
+    <div class="dash-grid">
+      <div>
+        <div class="panel"><h3>Booking activity <span class="see-all" data-action="nav" data-view="artist-bookings">See all</span></h3>
+          ${upcomingBookings.length? upcomingBookings.slice(0,5).map(b=>`<div class="list-row"><div class="booking-date"><b>${new Date(b.date+'T00:00:00').getDate()}</b><span>${new Date(b.date+'T00:00:00').toLocaleDateString('en-IN',{month:'short'})}</span></div><div class="lr-main"><div class="lr-title">${b.eventName}</div><div class="lr-sub">${fmtDate(b.date)} · ${b.location}</div></div><span class="status-badge status-${b.status.replace(' ','')}">${b.status}</span></div>`).join("")
+          : `<div class="empty-state"><div class="ic">${icon('ticket',36,1.4)}</div><h4>No bookings yet.</h4><p>Start discovering events for your next opportunity.</p><button class="btn btn-coral" data-action="nav" data-view="events">Discover events</button></div>`}
+        </div>
+        <div class="panel"><h3>Applications awaiting review <span class="see-all" data-action="nav" data-view="artist-applications">See all</span></h3>
+          ${pendingApps.length? pendingApps.slice(0,5).map(ap=>{const e=findEvent(ap.eventId);return `<div class="list-row">${eventThumbnail(e)}<div class="lr-main"><div class="lr-title">${e.name}</div><div class="lr-sub">Proposed ${fmtMoney(ap.fee)}</div></div><span class="status-badge status-Pending">Pending</span></div>`}).join("")
+          : `<p style="font-size:13.5px;color:var(--text-paper-mute);">No pending applications.</p>`}
+        </div>
+        <div class="panel"><h3>Collaboration requests <span class="see-all" data-action="nav" data-view="collaborate">See all</span></h3>
+          ${pendingCollabs.length? pendingCollabs.slice(0,3).map(c=>{const from=findArtist(c.fromId);return `<div class="list-row"><div class="avatar" style="width:38px;height:38px;font-size:13px;background:${grad(2)}">${profilePicture(from,38,38)}</div><div class="lr-main"><div class="lr-title">${from.name}</div><div class="lr-sub">${c.message.slice(0,44)}…</div></div><button class="btn btn-sm btn-coral" data-action="collab-respond" data-id="${c.id}" data-status="Accepted">Accept</button></div>`}).join("")
+          : `<p style="font-size:13.5px;color:var(--text-paper-mute);">No collaboration requests.</p>`}
+        </div>
+      </div>
+      <div>
+        <div class="panel"><h3>Workspace</h3>
+          <div class="quick-actions">
+            <button class="qa-btn" data-action="nav" data-view="artist-portfolio">${icon('edit',15)} Edit profile</button>
+            <button class="qa-btn" data-action="nav" data-view="artist-portfolio">${icon('image',15)} Upload portfolio</button>
+            <button class="qa-btn" data-action="nav" data-view="events">${icon('search',15)} Browse events</button>
+            <button class="qa-btn" data-action="nav" data-view="collaborate">${icon('users',15)} Find collaborators</button>
+            <button class="qa-btn" data-action="nav" data-view="artist-bookings">${icon('ticket',15)} View bookings</button>
+          </div>
+        </div>
+        <div class="panel"><h3>Your profile</h3><p>${findArtist(state.user?.artistId)?.category||''} &middot; ${findArtist(state.user?.artistId)?.location||''}</p><p>${findArtist(state.user?.artistId)?.verified?'Verified artist':'Verification pending'}</p>
+        </div>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+function renderArtistPortfolio(){
+  const a = findArtist(state.user && state.user.artistId);
+  if(a&&a.userId!==state.user?.id)return `<div class="empty-state"><h2>Portfolio access denied</h2><p>You can only edit your own profile. Reload the page to check your account.</p></div>`;
+  if(!a)return `<div class="empty-state"><h2>Profile unavailable</h2><p>Please sign in again.</p></div>`;
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Your profile</span><h1 style="margin-top:10px;">My profile &amp; portfolio</h1><p>Editing ${a.name}. These changes apply only to your artist profile.</p></div></div>
+  <div class="wrap" style="max-width:760px;padding:44px 0 100px;">
+    <div class="panel" data-profile-editor="${a.id}"><h3>Your artist profile</h3>
+      <div class="field-row2"><div class="f-group"><label>Name</label><input type="text" value="${a.name}" disabled title="Name is set at registration"></div><div class="f-group"><label>Category</label><select id="prof-cat">${CATEGORIES.map(c=>`<option ${c.name===a.category?'selected':''}>${c.name}</option>`).join("")}</select></div></div>
+      <div class="field-row2"><div class="f-group"><label for="prof-loc">Location</label><input id="prof-loc" value="${a.location}"></div><div class="f-group"><label for="prof-exp">Years of experience</label><input id="prof-exp" type="number" min="0" value="${a.exp}"></div></div><div class="f-group"><label for="prof-skills">Skills, separated by commas</label><input id="prof-skills" value="${a.skills.join(', ')}"></div><div class="f-group"><label>Short bio</label><textarea id="prof-bio">${a.bio}</textarea></div>
+      <div class="field-row2"><div class="f-group"><label>Starting price (₹)</label><input type="number" id="prof-price" value="${a.price}"></div><div class="f-group"><label>Availability</label><input type="text" id="prof-avail" value="${a.availability}"></div></div>
+      <button class="btn btn-coral" data-action="save-profile">Save changes</button>
+    </div>
+    <div class="panel"><h3>Portfolio</h3><p class="field-help">Your first uploaded image is used as your profile picture on artist cards and across your workspace.</p>
+      <div class="portfolio-grid">${(a.media||[]).map((url,i)=>`<div><img class="portfolio-image" src="${url}" alt="Portfolio work ${i+1}"><button class="btn btn-sm btn-outline-paper" data-action="remove-media" data-index="${i}">Remove image ${i+1}</button></div>`).join('')||'<p>No portfolio images yet.</p>'}</div>
+ <div class="f-group"><label for="portfolio-file">PNG, JPEG or WebP; 5 MB maximum, six images. The first image is your profile photo.</label><input id="portfolio-file" type="file" accept="image/png,image/jpeg,image/webp"></div><button class="btn btn-outline-paper" data-action="upload-portfolio">Upload image</button>
+    </div>
+  </div>`;
+}
+
+function renderArtistApplications(){
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Applications</span><h1 style="margin-top:10px;">Your event applications</h1></div></div>
+  <div class="wrap" style="padding:44px 0 100px;">
+    <div class="panel">
+      ${APPLICATIONS.length? `<table class="tbl"><thead><tr><th>Event</th><th>Proposed fee</th><th>Status</th><th></th></tr></thead><tbody>
+        ${APPLICATIONS.map(ap=>{const e=findEvent(ap.eventId);return `<tr><td><b>${e.name}</b><br><span style="color:var(--text-paper-mute);font-size:12px;">${fmtDate(e.date)}</span></td><td>${fmtMoney(ap.fee)}</td><td><span class="status-badge status-${ap.status}">${ap.status}</span></td><td>${ap.status==='Pending'?`<button class="btn btn-sm btn-outline-paper" data-action="withdraw-application" data-id="${ap.id}">Withdraw</button>`:''}</td></tr>`}).join("")}
+      </tbody></table>` : `<div class="empty-state"><div class="ic">${icon('filetext',36,1.4)}</div><h4>No applications yet.</h4><p>Browse open events and apply to your first one.</p><button class="btn btn-coral" data-action="nav" data-view="events">Discover events</button></div>`}
+    </div>
+  </div>`;
+}
+
+function renderArtistBookings(){
+ const button=(b,status,label)=>`<button class="btn btn-sm btn-outline-paper" data-action="booking-status" data-id="${b.id}" data-status="${status}">${label}</button>`;
+ return `<div class="page-hero"><div class="wrap"><span class="eyebrow">Manage requests</span><h1>Your bookings</h1><p>Review requests, agree on a final quote, and track booking and payment status in one place.</p></div></div><div class="wrap" style="padding:40px 0 100px"><div class="panel">${BOOKINGS.length?`<table class="tbl"><thead><tr><th>Event / artist</th><th>Date</th><th>Quote / total</th><th>Booking / payment</th><th>Actions</th></tr></thead><tbody>${BOOKINGS.map(b=>`<tr><td><b>${b.eventName}</b><br>${findArtist(b.artistId)?.name||'Artist unavailable'}<br>${b.location}${b.notes?`<p>${b.notes}</p>`:''}<br><small>${b.id}</small></td><td>${fmtDate(b.date)}</td><td>${fmtPaise(b.finalAmountPaise)}${state.role==='artist'&&b.status==='Pending'?`<div class="f-group"><label for="final-price-${b.id}">Final artist fee (INR)</label><input id="final-price-${b.id}" type="number" step="0.01" min="1" value="${b.artistFeePaise/100}"></div>`:''}</td><td><span class="status-badge status-${b.status}">${b.status}</span><br>${paymentBadge(b.paymentStatus)}${!b.paymentRequired?'<br><small>Previous booking ? payment record unavailable</small>':''}</td><td>${state.role==='artist'&&b.status==='Pending'?button(b,'Accepted','Accept final quote')+button(b,'Declined','Decline'):''}${state.role==='organizer'&&b.status==='Accepted'&&b.paymentRequired&& !['paid','review_required','authorized'].includes(b.paymentStatus)?`<button class="btn btn-coral btn-sm" data-action="nav" data-view="payment" data-id="${b.id}">Pay Now</button>`:''}${state.role==='organizer'&&b.paymentRequired?`<button class="btn btn-sm btn-outline-paper" data-action="nav" data-view="payment" data-id="${b.id}">Payment details</button>`:''}${state.role==='organizer'&&['Pending','Accepted','Confirmed'].includes(b.status)?button(b,'Cancelled',b.paymentStatus==='paid'?'Cancel / refund review':'Cancel'):''}${state.role==='organizer'&&b.status==='Confirmed'&&b.date<=new Date().toISOString().slice(0,10)?button(b,'Completed','Mark completed'):''}</td></tr>`).join('')}</tbody></table>`:`<div class="empty-state"><h3>No bookings yet</h3><p>${state.role==='artist'?'Requests from organizers will appear here. Complete your profile to help them discover you.':'Explore artists and send your first booking request.'}</p><button class="btn btn-coral" data-action="nav" data-view="${state.role==='artist'?'artist-portfolio':'explore'}">${state.role==='artist'?'Edit profile':'Explore talent'}</button></div>`}</div></div>`;
+}
+
+function renderCollaborationForm(){
+ const artist=findArtist(state.params.id);
+ if(!artist)return `<div class="empty-state"><h2>Artist not found</h2></div>`;
+ if(artist.id===state.user?.artistId)return `<div class="empty-state"><h2>Choose another creator to collaborate with.</h2></div>`;
+ return `<div class="booking-shell"><div class="panel"><h2>Collaborate with ${artist.name}</h2><p>Share your idea, timeline and the contribution you have in mind.</p><div class="f-group"><label for="collab-message">Project proposal</label><textarea id="collab-message" maxlength="4000" required></textarea></div><button class="btn btn-coral" data-action="send-collaboration" data-id="${artist.id}">Send proposal</button><button class="btn btn-outline-paper" data-action="nav" data-view="collaborate">Cancel</button></div></div>`;
+}
+function renderCollaborate(){
+  const excludeId = state.user?.artistId;
+  const pool = ARTISTS.filter(a=>a.id!==excludeId).slice(0,6);
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Collaborate</span><h1 style="margin-top:10px;">Find creators to collaborate with.</h1><p>Singers with composers, dancers with choreographers — build something together.</p></div></div>
+  <div class="wrap" style="padding:44px 0 40px;">
+    <div class="tabs">
+      <h2>Discover Creators</h2>
+    </div>
+    <div class="card-row">${pool.map((a,i)=>artistCard(a,i,true)).join('')||'<div class="empty-state"><h3>Your next creative connection is on its way.</h3><p>More artists will appear here as they join the community.</p></div>'}</div>
+  </div>
+  <div class="wrap" style="padding-bottom:100px;">
+    <div class="panel"><h3>Your collaboration requests</h3>
+      ${COLLABORATIONS.length? COLLABORATIONS.map(c=>{const from=findArtist(c.fromId), to=findArtist(c.toId);
+        return `<div class="list-row"><div class="avatar" style="width:38px;height:38px;font-size:13px;background:${grad(3)}">${profilePicture(from,38,38)}</div><div class="lr-main"><div class="lr-title">${from.name} → ${to.name}</div><div class="lr-sub">${c.message}</div></div>
+        ${c.status==='Pending'&&c.toId===state.user?.artistId? `<button class="btn btn-sm btn-coral" data-action="collab-respond" data-id="${c.id}" data-status="Accepted">Accept</button><button class="btn btn-sm btn-outline-paper" data-action="collab-respond" data-id="${c.id}" data-status="Declined">Decline</button>`
+        : `<span class="status-badge status-${c.status}">${c.status}</span>`}
+        </div>`}).join("")
+      : `<div class="empty-state"><div class="ic">${icon('users',36,1.4)}</div><h4>No collaboration requests yet.</h4><p>Reach out to a fellow creator to start something new.</p></div>`}
+    </div>
+  </div>`;
+}
+
+/* ---------------- NOTIFICATIONS ---------------- */
+function renderNotifications(){
+  const icons = {application:icon('filetext',16),booking:icon('ticket',16),collab:icon('users',16),review:'★'};
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Notifications</span><h1 style="margin-top:10px;">Notifications</h1></div></div>
+  <div class="wrap" style="max-width:700px;padding:44px 0 100px;">
+    <div class="panel">
+      ${NOTIFICATIONS.length? NOTIFICATIONS.map(n=>`
+        <div class="list-row" style="${n.read?'':'background:rgba(242,169,59,.06);'}">
+          <div class="avatar" style="width:38px;height:38px;font-size:16px;background:var(--paper-dim);color:var(--text-paper);">${icons[n.kind]||icon('bell',16)}</div>
+          <div class="lr-main"><div class="lr-title">${n.text}</div><div class="lr-sub">${n.when}</div></div>
+          ${!n.read?`<button class="btn btn-sm btn-outline-paper" data-action="read-notification" data-id="${n.id}">Mark read</button>`:''}
+        </div>`).join("")
+      : `<div class="empty-state"><div class="ic">${icon('bell',36,1.4)}</div><h4>You're all caught up.</h4><p>New activity will show up here.</p></div>`}
+    </div>
+  </div>`;
+}
+
+/* ---------------- ORGANIZER DASHBOARD ---------------- */
+function renderOrganizerDashboard(){
+  const activeEvents = EVENTS.filter(e=>e.organizerId===state.user?.id&&e.date>=new Date().toISOString().slice(0,10));
+  const pendingApps = APPLICATIONS.filter(a=>a.status==="Pending");
+  const spend = BOOKINGS.filter(b=>["Confirmed","Completed"].includes(b.status)).reduce((s,b)=>s+b.fee+b.platformFee,0);
+  return `
+  <div class="dash-shell"><div class="wrap dash-top">
+    ${dashboardHeading('Organizer','Overview','Manage your events and find the right talent.', '<button class="btn btn-coral" data-action="nav" data-view="create-event">Create event</button>')}
+    <div class="stat-row">
+      <div class="stat-card"><div class="lbl">Active events</div><div class="val">${activeEvents.length}</div></div>
+      <div class="stat-card"><div class="lbl">Pending applications</div><div class="val">${pendingApps.length}</div></div>
+      <div class="stat-card"><div class="lbl">Active bookings</div><div class="val">${BOOKINGS.filter(b=>['Pending','Accepted','Confirmed'].includes(b.status)).length}</div></div>
+      <div class="stat-card"><div class="lbl">Confirmed booking value</div><div class="val">${fmtMoney(spend)}</div></div>
+    </div>
+    <div class="dash-grid">
+      <div>
+        <div class="panel"><h3>Your events <span class="see-all" data-action="nav" data-view="events">See all</span></h3>
+          ${activeEvents.slice(0,5).map(e=>`<div class="list-row">${eventThumbnail(e)}<div class="lr-main"><div class="lr-title">${e.name}</div><div class="lr-sub">${fmtDate(e.date)} · ${e.location}</div></div><button class="btn btn-sm btn-outline-paper" data-action="nav" data-view="event-detail" data-id="${e.id}">View</button></div>`).join("")||'<p class="dashboard-empty">No upcoming events. Create an event to start receiving applications.</p>'}
+        </div>
+        <div class="panel"><h3>Applications awaiting review <span class="see-all" data-action="nav" data-view="organizer-applications">See all</span></h3>
+          ${pendingApps.length? pendingApps.slice(0,5).map(ap=>{const a=findArtist(ap.artistId),e=findEvent(ap.eventId);return `<div class="list-row"><div class="avatar" style="width:38px;height:38px;font-size:13px;background:${grad(ARTISTS.indexOf(a))}">${profilePicture(a,44,44)}</div><div class="lr-main"><div class="lr-title">${a.name} → ${e.name}</div><div class="lr-sub">Proposed ${fmtMoney(ap.fee)}</div></div><button class="btn btn-sm btn-coral" data-action="app-respond" data-id="${ap.id}" data-status="Accepted">Accept</button></div>`}).join("")
+          : `<p style="font-size:13.5px;color:var(--text-paper-mute);">No pending applications.</p>`}
+        </div>
+      </div>
+      <div>
+        <div class="panel"><h3>Workspace</h3>
+          <div class="quick-actions">
+            <button class="qa-btn" data-action="nav" data-view="create-event">${icon('plus',15)} Create event</button>
+            <button class="qa-btn" data-action="nav" data-view="explore">${icon('search',15)} Find artists</button>
+            <button class="qa-btn" data-action="nav" data-view="organizer-applications">${icon('clipboard',15)} Review applications</button>
+            <button class="qa-btn" data-action="nav" data-view="organizer-bookings">${icon('ticket',15)} View bookings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+function renderOrganizerApplications(){
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Applications</span><h1 style="margin-top:10px;">Manage applications</h1></div></div>
+  <div class="wrap" style="padding:44px 0 100px;">
+    <div class="panel">
+      ${APPLICATIONS.length? APPLICATIONS.map(ap=>{const a=findArtist(ap.artistId),e=findEvent(ap.eventId);
+        return `<div class="list-row"><div class="avatar" style="width:44px;height:44px;font-size:14px;background:${grad(ARTISTS.indexOf(a))}">${profilePicture(a,44,44)}</div>
+        <div class="lr-main"><div class="lr-title">${a.name} <span style="font-weight:400;color:var(--text-paper-mute);">applied to</span> ${e.name}</div><div class="lr-sub">${ap.message}</div><div class="lr-sub">Proposed fee: ${fmtMoney(ap.fee)}</div></div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${ap.status==='Pending'? `<button class="btn btn-sm btn-coral" data-action="app-respond" data-id="${ap.id}" data-status="Accepted">Accept</button><button class="btn btn-sm btn-ghost-danger" data-action="app-respond" data-id="${ap.id}" data-status="Rejected">Reject</button>`
+          : `<span class="status-badge status-${ap.status}">${ap.status}</span>`}
+          <button class="btn btn-sm btn-outline-paper" data-action="nav" data-view="artist-profile" data-id="${a.id}">Profile</button>
+        </div></div>`}).join("")
+      : `<div class="empty-state"><div class="ic">${icon('clipboard',36,1.4)}</div><h4>No applications yet.</h4><p>Applications will appear here once artists apply to your events.</p></div>`}
+    </div>
+  </div>`;
+}
+
+function renderOrganizerBookings(){
+  return renderArtistBookings().replace("Your bookings","Bookings").replace('data-action="nav" data-view="explore">Discover Talent','data-action="nav" data-view="explore">Discover Talent');
+}
+
+/* ---------------- ADMIN ---------------- */
+function renderAdminDashboard(){
+  return `
+  <div class="dash-shell"><div class="wrap dash-top">
+    ${dashboardHeading('Administration','Platform overview','Accounts, artist profiles and booking activity.','<button class="btn btn-outline-paper" data-action="nav" data-view="admin-users">Manage users</button>')}
+    <div class="stat-row">
+      <div class="stat-card"><div class="lbl">Total users</div><div class="val">${ADMIN_REPORTS.totalUsers||0}</div></div>
+      <div class="stat-card"><div class="lbl">Total artists</div><div class="val">${ADMIN_REPORTS.totalArtists||0}</div></div>
+      <div class="stat-card"><div class="lbl">Total organizers</div><div class="val">${ADMIN_REPORTS.totalOrganizers||0}</div></div>
+      <div class="stat-card"><div class="lbl">Total events</div><div class="val">${ADMIN_REPORTS.totalEvents||0}</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="lbl">Total bookings</div><div class="val">${ADMIN_REPORTS.totalBookings||0}</div></div>
+      <div class="stat-card"><div class="lbl">Recorded booking fees</div><div class="val">${fmtMoney(ADMIN_REPORTS.confirmedRevenue||0)}</div></div>
+
+      <div class="stat-card"><div class="lbl">Pending verifications</div><div class="val">${ARTISTS.filter(a=>!a.verified).length}</div></div>
+    </div>
+    <div class="dash-grid">
+      <div>
+        <div class="panel"><h3>Artist profiles</h3>
+          <table class="tbl"><thead><tr><th>Name</th><th>Category</th><th>Status</th><th></th></tr></thead><tbody>
+          ${ARTISTS.map(a=>`<tr><td><b>${a.name}</b></td><td>${a.category}</td><td>${a.verified?'<span class="status-badge status-Accepted">Verified</span>':'<span class="status-badge status-Pending">Unverified</span>'}</td><td>${!a.verified?`<button class="btn btn-sm btn-outline-paper" data-action="admin-verify" data-id="${a.id}">Verify</button>`:''}</td></tr>`).join("")}
+          </tbody></table>
+        </div>
+      </div>
+      <div>
+        <div class="panel"><h3>Workspace</h3>
+          <div class="quick-actions">
+            <button class="qa-btn" data-action="nav" data-view="admin-users">${icon('users',15)} Manage users</button>
+            <button class="qa-btn" data-action="nav" data-view="admin-events">${icon('calendar',15)} Manage events</button>
+            <button class="qa-btn" data-action="nav" data-view="admin-bookings">${icon('ticket',15)} Review bookings</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>`;
+}
+
+function renderAdminUsers(){
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Admin</span><h1 style="margin-top:10px;">Users</h1></div></div>
+  <div class="wrap" style="padding:44px 0 100px;"><div class="panel">
+    <table class="tbl"><thead><tr><th>Name</th><th>Role</th><th>Location</th><th>Status</th><th></th></tr></thead><tbody>
+    ${ADMIN_USERS.map(u=>`<tr><td><b>${u.name}</b></td><td>${u.role[0].toUpperCase()+u.role.slice(1)}</td><td>${u.location||'—'}</td><td>${u.suspended?'Suspended':u.role==='artist'?(u.verified?'<span class="status-badge status-Accepted">Verified</span>':'<span class="status-badge status-Pending">Unverified</span>'):'<span class="status-badge status-Accepted">Active</span>'}</td><td>${u.role==='artist'&&!u.verified?`<button class="btn btn-sm btn-outline-paper" data-action="admin-verify" data-id="${u.artistProfileId}">Verify</button>`:''} ${u.role!=='admin'?`<div class="account-access"><p>Email: ${u.emailVerified?'Verified':'Not verified'}</p><p>Approval: ${u.approvalStatus}</p><button class="btn btn-sm btn-outline-paper" data-action="admin-approval" data-id="${u.id}" data-approval="approved">Approve account</button><button class="btn btn-sm btn-outline-paper" data-action="admin-approval" data-id="${u.id}" data-approval="rejected">Reject account</button></div><button class="btn btn-sm btn-ghost-danger" data-action="admin-suspend" data-id="${u.id}">${u.suspended?"Restore":"Suspend"}</button>`:''}</td></tr>`).join("")}
+    </tbody></table>
+  </div></div>`;
+}
+
+function renderAdminEvents(){
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Admin</span><h1 style="margin-top:10px;">Events</h1></div></div>
+  <div class="wrap" style="padding:44px 0 100px;"><div class="panel">
+    <table class="tbl"><thead><tr><th>Event</th><th>Organizer</th><th>Date</th><th>Budget</th></tr></thead><tbody>
+    ${EVENTS.map(e=>`<tr><td><b>${e.name}</b></td><td>${e.organizer}</td><td>${fmtDate(e.date)}</td><td>${e.budget}</td></tr>`).join("")}
+    </tbody></table>
+  </div></div>`;
+}
+
+function renderAdminBookings(){
+  return `
+  <div class="page-hero"><div class="wrap"><span class="eyebrow on-ink">Admin</span><h1 style="margin-top:10px;">Booking records</h1></div></div>
+  <div class="wrap" style="padding:44px 0 100px;"><div class="panel">
+    <table class="tbl"><thead><tr><th>Booking ID</th><th>Artist</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+    ${BOOKINGS.map(b=>`<tr><td>${b.id}</td><td>${findArtist(b.artistId).name}</td><td>${fmtMoney(b.fee+b.platformFee)}</td><td><span class="status-badge status-${b.status.replace(' ','')}">${b.status}</span></td></tr>`).join("")}
+    </tbody></table>
+  </div></div>`;
+}
+
+function currentPage(){
+  switch(state.view){
+    case "landing": return renderLanding();
+    case "about": return renderAbout();
+    case "login": return renderLogin();
+    case "reset": return renderReset();
+    case "verify-email": return renderEmailVerification();
+    case "account-status": return renderAccountStatus();
+    case "forgot": return renderForgot();
+    case "register": return renderRegister();
+    case "explore": return renderExplore();
+    case "artist-profile": return renderArtistProfile();
+    case "events": return renderEvents();
+    case "event-detail": return renderEventDetail();
+    case "create-event": return requireRole("organizer", renderCreateEvent);
+    case "apply-form": return requireRole("artist", renderApplyForm);
+    case "book": return requireRole("organizer", renderBookingForm);
+    case "booking-review": return renderBookingReview();
+    case "payment": return requireRole("organizer",renderPayment);
+    case "payment-history": return requireRole("organizer",renderPaymentHistory);
+    case "receipt": return requireRole("organizer",renderReceipt);
+    case "admin-payments": return requireRole("admin",renderAdminPayments);
+    case "confirmation": return renderConfirmation();
+    case "artist-dashboard": return requireRole("artist", renderArtistDashboard);
+    case "artist-portfolio": case "artist-profile-self": return requireRole("artist", renderArtistPortfolio);
+    case "artist-applications": return requireRole("artist", renderArtistApplications);
+    case "artist-bookings": return requireRole("artist", renderArtistBookings);
+    case "collab-compose": return requireRole("artist",renderCollaborationForm);
+    case "collaborate": return requireRole("artist", renderCollaborate);
+    case "notifications": return requireAnyRole(renderNotifications);
+    case "organizer-dashboard": return requireRole("organizer", renderOrganizerDashboard);
+    case "organizer-applications": return requireRole("organizer", renderOrganizerApplications);
+    case "organizer-bookings": return requireRole("organizer", renderOrganizerBookings);
+    case "admin-dashboard": return requireRole("admin", renderAdminDashboard);
+    case "admin-users": return requireRole("admin", renderAdminUsers);
+    case "admin-events": return requireRole("admin", renderAdminEvents);
+    case "admin-bookings": return requireRole("admin", renderAdminBookings);
+    case "artist-profile-view": return requireRole("organizer", renderOrganizerDashboard);
+    default: return `<div class="wrap empty-state"><span class="eyebrow">404 / Page not found</span><h2 style="margin-top:18px">Let us find your next connection.</h2><p>This page does not exist. Head back to explore the artist community.</p><button class="btn btn-coral" data-action="nav" data-view="landing">Back to home</button></div>`;
+  }
+}
+function requireRole(role, fn){
+  if(state.role!==role){ return renderLoginGate(role); }
+  return fn();
+}
+function requireAnyRole(fn){
+  if(!state.role) return renderLoginGate("artist");
+  return fn();
+}
+function renderLoginGate(suggested){
+ const signedIn=!!state.role;
+ return `<div class="auth-shell"><div class="auth-card" style="text-align:center"><div style="margin-bottom:20px;color:var(--violet)">${icon('lock',30)}</div><h2>${signedIn?'A different creative workspace':'Your next connection awaits.'}</h2><p class="sub">${signedIn?`This action is available to ${suggested==='organizer'?'event organizers':'artists'}. You are signed in as ${state.role==='organizer'?'an organizer':'an '+state.role}.`:'Log in to manage requests, share your work and connect with the community.'}</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">${signedIn?`<button class="btn btn-coral" data-action="nav" data-view="${state.role}-dashboard">Back to my dashboard</button>`:`<button class="btn btn-outline-paper" data-action="nav" data-view="login">Log in</button><button class="btn btn-coral" data-action="nav" data-view="register" data-role="${suggested}">Create an account</button>`}</div></div></div>`;
+}
+
+function render(){
+  if(state.loading){
+    document.getElementById("app").innerHTML = renderNav()+`<main id="main-content" class="wrap skeleton-shell" aria-busy="true" aria-label="Loading page"><div class="loading-title" role="status"><span class="loading-dot"></span>Finding your next creative connection...</div><div class="card-row">${[0,1,2].map(()=>'<div><div class="skeleton-block"></div><div class="skeleton-line"></div></div>').join('')}</div></main>`;
+    return;
+  }
+  document.getElementById("app").innerHTML = renderNav() + `<main id="main-content" tabindex="-1" class="page fade-in">${state.pageError?`<div class="empty-state"><h2>Unable to load this page</h2><p>${escapeRecord(state.pageError)}</p><button class="btn btn-coral" data-action="retry-page">Try again</button></div>`:currentPage()}</main>`;
+  const titles={landing:'Discover artists. Create together.',explore:'Explore artists','artist-profile':findArtist(state.params.id)?.name||'Artist profile',events:'Creative opportunities',book:'Send a booking request',payment:'Booking payment','payment-history':'Payment history',receipt:'Payment receipt','admin-payments':'Payment operations',login:'Log in',register:'Join the community','verify-email':'Verify your email','account-status':'Account status',forgot:'Password recovery',reset:'Choose a new password'};
+  const pageTitle=titles[state.view]||state.view.split('-').map(word=>word[0].toUpperCase()+word.slice(1)).join(' ');
+  document.title=unescapeText(pageTitle)+' | TalentSphere';
+  document.querySelectorAll('table.tbl').forEach(table=>{const body=table.tBodies[0];if(body&&!body.children.length){const cell=body.insertRow().insertCell();cell.colSpan=table.querySelectorAll('thead th').length;cell.className='table-empty';cell.textContent='No records yet. New activity will appear here.';}});
+  syncAuthControls();
+  bindInputs();
+ document.querySelectorAll("label").forEach((label,i)=>{const input=label.parentElement.querySelector("input,textarea,select");if(input){if(!input.id)input.id="field-"+i;label.htmlFor=input.id;}});
+ document.querySelectorAll("span[data-action],div[data-action]").forEach(el=>{el.tabIndex=0;el.setAttribute("role","button");el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();el.click();}};});
+}
+
+function bindInputs(){
+  const availability=document.querySelector('[data-bind="explore-availability"]');if(availability)availability.addEventListener("change",e=>{state.explore.availability=e.target.value;state.explore.page=1;render();});
+  document.querySelectorAll("[data-bind^=explore-]").forEach(el=>el.addEventListener("change",()=>state.explore.page=1));
+  const q = document.querySelector('[data-bind="explore-q"]');
+  if(q) q.addEventListener("input", e=>{state.explore.q=e.target.value;renderOnly();});
+  const cat = document.querySelector('[data-bind="explore-category"]');
+  if(cat) cat.addEventListener("change", e=>{state.explore.category=e.target.value;render();});
+  const loc = document.querySelector('[data-bind="explore-location"]');
+  if(loc) loc.addEventListener("change", e=>{state.explore.location=e.target.value;render();});
+  const sort = document.querySelector('[data-bind="explore-sort"]');
+  if(sort) sort.addEventListener("change", e=>{state.explore.sort=e.target.value;render();});
+  const price = document.querySelector('[data-bind="explore-price"]');
+  if(price) price.addEventListener("change", e=>{state.explore.maxPrice=+e.target.value;render();});
+  if(price)price.addEventListener("input",e=>{e.target.parentElement.querySelector("label").textContent="Max price: "+fmtMoney(+e.target.value);});
+}
+// lighter re-render for text typing (keep focus)
+function renderOnly(){
+  const resultsArea = document.querySelector(".results-topbar")?.parentElement;
+  if(!resultsArea){render();return;}
+  // simplest reliable approach: full render but restore focus to search box
+  const active = document.activeElement;
+  const cursorPos = active && active.selectionStart;
+  render();
+  const q2 = document.querySelector('[data-bind="explore-q"]');
+  if(q2){q2.focus(); if(cursorPos!=null) q2.setSelectionRange(cursorPos,cursorPos);}
+}
+
+/* ---------------- ACTIONS ---------------- */
+document.addEventListener("click", async (e)=>{
+  const el = e.target.closest("[data-action]");
+  if(!el) return;
+  if(el.tagName==="A")e.preventDefault();
+  if(el.disabled || el.dataset.busy)return;
+  const action = el.dataset.action;
+  el.dataset.busy="true";el.setAttribute("aria-busy","true");
+  const id = el.dataset.id;
+  const authAction=['do-login','do-register','verify-code','resend-code','do-forgot','reset-password'].includes(action);
+  if(authAction&&state.authBusy){delete el.dataset.busy;return;}
+  if(authAction){state.authBusy=true;state.authNotice='';syncAuthControls();}
+
+  try{
+    if(['save-profile','upload-portfolio','remove-media'].includes(action)){const editor=document.querySelector('[data-profile-editor]'),own=findArtist(state.user?.artistId);if(!editor||state.role!=='artist'||!own||own.userId!==state.user?.id||editor.dataset.profileEditor!==own.id)throw new Error('You can only edit your own portfolio. Reload the page to check your account.');}
+    const required={"do-register":["reg-name","reg-email","reg-pass"],"do-login":["login-email","login-pass"],"publish-event":["ev-name","ev-date","ev-time","ev-loc","ev-venue","ev-budget","ev-deadline"],"send-booking-request":["bk-event","bk-date","bk-loc"],"save-profile":["prof-bio","prof-loc","prof-price"],"send-collaboration":["collab-message"]};
+    for(const key of required[action]||[]){const input=document.getElementById(key);input.required=true;if(!input.reportValidity())return;}
+
+    switch(action){
+      case "admin-approval": await api(`/admin/users/${id}/approval`,{method:"PATCH",body:JSON.stringify({approvalStatus:el.dataset.approval})});toast("Account approval updated. Email verification was not changed.");await nav("admin-users");break;
+      case "start-checkout": await startCheckout(id);break;
+      case "refresh-payment": await refreshPaymentStatus();break;
+      case "print-receipt": window.print();break;
+      case "filter-payments": paymentAdminFilters={status:document.getElementById('pay-filter-status').value,mode:document.getElementById('pay-filter-mode').value,q:document.getElementById('pay-filter-q').value,page:1};await nav('admin-payments');break;
+      case "reset-payment-filters": paymentAdminFilters={status:'',mode:'',q:'',page:1};await nav('admin-payments');break;
+      case "payment-admin-page": paymentAdminFilters.page=Number(el.dataset.page);await nav('admin-payments');break;
+      case "admin-reconcile-payment": await api(`/payments/admin/bookings/${id}/reconcile`,{method:'POST',body:'{}'});toast('Provider reconciliation completed.');await nav('admin-payments');break;
+      case "payment-review-note": await api(`/payments/admin/bookings/${id}/review-note`,{method:'POST',body:JSON.stringify({note:document.getElementById('review-'+el.dataset.record).value})});toast('Review note saved. Provider facts were not changed.');await nav('admin-payments');break;
+
+      case "toggle-filters": state.filtersOpen=!state.filtersOpen;render();break;
+      case "clear-filter": {const key=el.dataset.filter;state.explore[key]=key==='q'?'':key==='maxPrice'?null:'All';state.explore.page=1;render();break;}
+      case "preview-media": {const artist=findArtist(id),index=Number(el.dataset.index);const img=document.getElementById('media-dialog-image');img.src=artist.media[index];img.alt=unescapeText(artist.name)+" portfolio work "+(index+1);document.getElementById('media-dialog').showModal();break;}
+      case "close-preview": document.getElementById('media-dialog').close();break;
+
+      case "do-forgot": {const email=document.getElementById('forgot-email');if(!email.reportValidity())return;state.authEmail=email.value.trim().toLowerCase();const result=await api('/auth/forgot-password',{method:'POST',body:JSON.stringify({email:state.authEmail})});state.authNotice=unescapeText(result.message);state.authNoticeError=false;render();break;}
+      case "reset-password": {const password=document.getElementById('reset-password'),confirm=document.getElementById('reset-confirm');if(!password.reportValidity()||!confirm.reportValidity())return;if(password.value!==confirm.value){state.authNotice='Passwords do not match. Please enter them again.';state.authNoticeError=true;render();break;}const result=await api('/auth/reset-password',{method:'POST',body:JSON.stringify({token:state.params.id,password:password.value})});setAuthToken(null);state.role=null;state.user=null;state.authNotice=unescapeText(result.message);state.authNoticeError=false;history.replaceState(null,'','#login');await nav('login');break;}
+
+      case "read-notification": await api(`/notifications/${id}/read`,{method:"PATCH"});await nav("notifications");break;
+      case "retry-page": await nav(state.view,state.params);break;
+      case "explore-page": state.explore.page=Number(el.dataset.page);render();break;
+      case "nav": {
+        const view = el.dataset.view;
+        const params = {};
+        if(id) params.id = id;
+        state.authNotice="";state.authNoticeError=false;
+        if(el.dataset.role) state.regRole = el.dataset.role;
+        if(el.dataset.category){ state.explore.category = el.dataset.category; state.explore.page=1; }
+        await nav(view, params);
+        break;
+      }
+      case "togglenav": state.navOpen=!state.navOpen; render(); break;
+      case "logout": {
+        try{await api('/auth/logout',{method:'POST',body:'{}'});}catch(err){if(err.status!==401&&err.status!==403)toast('Signed out on this device. Server session revocation could not be confirmed.',true);}
+        finally{setAuthToken(null);state.role=null;state.user=null;PAYMENT_DETAIL=null;PAYMENT_HISTORY=[];PAYMENT_RECEIPT=null;await nav('landing');}break;
+      }
+
+      case "setregrole": state.regRole = el.dataset.role; render(); break;
+
+      case "do-login": {
+        const email = ((document.getElementById("login-email")||{}).value || "").trim().toLowerCase();
+        state.authEmail=email;
+        const password = (document.getElementById("login-pass")||{}).value || "";
+        if(!email || !password){ toast("Enter your email and password.", true); break; }
+        const { token, user } = await api("/auth/login", { method:"POST", body:JSON.stringify({email,password}) });
+        setAuthToken(token);
+        state.role = user.role; state.user = { id:user.id, name:user.name, artistId:null };
+        if(user.role==="artist"){
+          const me = await api("/auth/me");
+          state.user.artistId = me.artistProfile ? me.artistProfile.id : null;
+        }
+        toast(`Welcome back, ${user.name.split(' ')[0]}!`);
+        await nav(user.role==="admin"?"admin-dashboard":user.role==="artist"?"artist-dashboard":"organizer-dashboard");
+        break;
+      }
+      case "do-register": {
+        const name=document.getElementById('reg-name').value.trim(),email=document.getElementById('reg-email').value.trim().toLowerCase(),password=document.getElementById('reg-pass').value;
+        state.authEmail=email;
+        const result=await api('/auth/register',{method:'POST',body:JSON.stringify({name,email,password,role:state.regRole,category:document.getElementById('reg-cat').value,location:document.getElementById('reg-loc').value.trim()})});
+        setAuthToken(null);state.role=null;state.user=null;rememberVerification(email,result);state.authNotice=unescapeText(result.message);state.authNoticeError=false;await nav('verify-email');break;
+      }
+      case "verify-code": {
+        const emailField=document.getElementById('verify-email'),codeField=document.getElementById('verification-code');if(!emailField.reportValidity()||!codeField.reportValidity())return;
+        const email=emailField.value.trim().toLowerCase();state.authEmail=email;rememberVerification(email);
+        const result=await api('/auth/verify-email',{method:'POST',body:JSON.stringify({email,code:codeField.value})});
+        sessionStorage.removeItem('ts_email_verification');state.verification={email:'',resendAvailableAt:0};state.authNotice=unescapeText(result.message);state.authNoticeError=false;await nav('login');break;
+      }
+      case "resend-code": {
+        const field=document.getElementById('verify-email');if(!field.reportValidity())return;
+        const email=field.value.trim().toLowerCase();state.authEmail=email;
+        const result=await api('/auth/resend-verification',{method:'POST',body:JSON.stringify({email})});rememberVerification(email,result);state.authNotice=unescapeText(result.message);state.authNoticeError=false;render();break;
+      }
+
+      case "reset-filters": state.explore = {page:1,availability:'All',q:"",category:"All",location:"All",sort:"Recommended",maxPrice:null}; render(); break;
+
+      case "book": {
+        if(!state.role){ await nav("login"); toast("Log in to book an artist.", true); break; }
+        await nav("book", {id});
+        break;
+      }
+      case "send-booking-request": {
+        const artistId = el.dataset.id;
+        const eventName = document.getElementById("bk-event").value.trim();
+        const date = document.getElementById("bk-date").value;
+        const duration = document.getElementById("bk-duration").value;
+        const location = document.getElementById("bk-loc").value;
+        const notes=document.getElementById("bk-notes").value;
+        const bk = await api("/bookings", { method:"POST", body:JSON.stringify({artistId,eventName,date,duration,location,notes}) });
+        state.bookingDraft = bk;
+        toast("Booking request sent!");
+        await nav("booking-review");
+        break;
+      }
+      case "booking-status": {
+ let finalPricePaise;
+        if(el.dataset.status==='Accepted'){
+          const field=document.getElementById('final-price-'+id);if(!field.reportValidity())return;
+          const value=field.value;if(!/^\d+(\.\d{1,2})?$/.test(value))throw new Error('Enter a final INR fee with up to two decimal places.');
+          const [whole,fraction='']=value.split('.');finalPricePaise=Number(whole)*100+Number(fraction.padEnd(2,'0'));
+        }
+        await api(`/bookings/${id}/status`,{method:"PATCH",body:JSON.stringify({status:el.dataset.status,finalPricePaise})});toast("Booking updated.");await nav(state.role==="artist"?"artist-bookings":"organizer-bookings");break;
+      }
+      case "apply": {
+        if(!state.role){ await nav("login"); toast("Log in as an artist to apply.", true); break; }
+        if(state.role!=="artist"){ toast("Only creative professionals can apply to events.", true); break; }
+        await nav("apply-form", {id});
+        break;
+      }
+      case "apply-prompt": await nav("login"); toast("Log in as an artist to apply to this event.", true); break;
+      case "submit-application": {
+        const eventId = el.dataset.id;
+        const message = document.getElementById("app-msg").value || "I'd love to be part of this event.";
+        const fee = +document.getElementById("app-fee").value || undefined;
+        await api("/applications", { method:"POST", body:JSON.stringify({eventId,message,fee}) });
+        toast("Application submitted!");
+        await nav("event-detail",{id:eventId});
+        break;
+      }
+      case "withdraw-application": {
+        await api(`/applications/${id}`, { method:"PATCH", body:JSON.stringify({status:"Withdrawn"}) });
+        toast("Application withdrawn.");
+        await nav(state.view, state.params);
+        break;
+      }
+      case "app-respond": {
+        await api(`/applications/${id}`, { method:"PATCH", body:JSON.stringify({status:el.dataset.status}) });
+        toast(`Application ${el.dataset.status.toLowerCase()}.`);
+        await nav(state.view, state.params);
+        break;
+      }
+
+
+      case "publish-event": {
+        const name = document.getElementById("ev-name").value;
+        const description = document.getElementById("ev-desc").value;
+        const category = document.getElementById("ev-cat").value;
+        const date = document.getElementById("ev-date").value;
+        const time = document.getElementById("ev-time").value;
+        const location = document.getElementById("ev-loc").value;
+        const venue = document.getElementById("ev-venue").value;
+        const talent = document.getElementById("ev-req").value;
+        const numArtists = +document.getElementById("ev-num").value || 1;
+        const budget = "₹"+(document.getElementById("ev-budget").value || "TBD");
+        const deadline = document.getElementById("ev-deadline").value || date;
+        await api("/events", { method:"POST", body:JSON.stringify({name,description,category,date,time,location,venue,talent,numArtists,budget,deadline}) });
+        toast("Event published!");
+        await nav("events");
+        break;
+      }
+
+      case "collab-request": await nav("collab-compose",{id});break;
+      case "send-collaboration": {
+        const message=document.getElementById("collab-message").value.trim();
+        if(!message)throw new Error("Describe the project you would like to create together.");
+        await api("/collaborations",{method:"POST",body:JSON.stringify({toId:id,message})});toast("Collaboration request sent.");await nav("collaborate");break;
+      }
+      case "collab-respond": {
+        await api(`/collaborations/${id}`, { method:"PATCH", body:JSON.stringify({status:el.dataset.status}) });
+        toast(`Collaboration request ${el.dataset.status.toLowerCase()}.`);
+        await nav(state.view, state.params);
+        break;
+      }
+
+
+      case "save-profile": {
+        const category = (document.getElementById("prof-cat")||{}).value;
+        const bio = (document.getElementById("prof-bio")||{}).value;
+        const price = Number(document.getElementById("prof-price").value);
+        const availability = (document.getElementById("prof-avail")||{}).value;
+        const updated = await api("/artists/me", { method:"PATCH", body:JSON.stringify({profileId:state.user.artistId,category,bio,price,availability,location:document.getElementById("prof-loc").value,exp:Number(document.getElementById("prof-exp").value),skills:document.getElementById("prof-skills").value.split(",").map(s=>s.trim()).filter(Boolean)}) });
+        const idx = ARTISTS.findIndex(a=>a.id===updated.id);
+        if(idx>=0) ARTISTS[idx] = updated;
+        toast("Profile updated.");
+        render();
+        break;
+      }
+      case "upload-portfolio": {
+ const file=document.getElementById("portfolio-file").files[0];
+ if(!file||!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5*1024*1024)throw new Error("Choose a PNG, JPEG or WebP image up to 5 MB.");
+ const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(file);});
+ await api("/artists/me/portfolio",{method:"POST",body:JSON.stringify({data,profileId:state.user.artistId})});toast("Image saved.");await nav("artist-portfolio");break;
+ }
+ case "remove-media": await api(`/artists/me/portfolio/${el.dataset.index}?profileId=${encodeURIComponent(state.user.artistId)}`,{method:"DELETE"});await nav("artist-portfolio");break;
+
+      case "admin-verify": {
+        const updated = await api(`/admin/artists/${id}/verify`, { method:"PATCH" });
+        const idx = ARTISTS.findIndex(a=>a.id===id);
+        if(idx>=0) ARTISTS[idx] = updated;
+        toast(`${updated.name} verified.`);
+        await nav(state.view, state.params);
+        break;
+      }
+      case "admin-suspend": await api(`/admin/users/${id}/suspension`,{method:"PATCH"});toast("Account access updated.");await nav("admin-users");break;
+    }
+  }catch(err){
+    if(authAction){state.authNotice=err.message;state.authNoticeError=true;
+      if(err.data?.verificationRequired&&action!=='do-login'){rememberVerification(err.data.email||state.authEmail,err.data);await nav('verify-email');}
+      else if(action==='do-login'&&await showAccountBlock(err)){}
+      else{if(state.view==='verify-email')rememberVerification(document.getElementById('verify-email')?.value||state.verification.email,err.data||{});render();}
+    }else toast(err.message,true);
+  }finally{if(authAction){state.authBusy=false;syncAuthControls();}delete el.dataset.busy;el.removeAttribute("aria-busy");}
+});
+
+document.querySelector(".skip-link").addEventListener("click",e=>{e.preventDefault();document.getElementById("main-content")?.focus();});
+document.getElementById("media-dialog").addEventListener("click",e=>{if(e.target===e.currentTarget)e.currentTarget.close();});
+window.addEventListener("storage",event=>{if(event.key==='ts_token')location.reload();});
+window.addEventListener("hashchange",()=>{const [view,id]=location.hash.slice(1).split("/");if(view==="main-content"){document.getElementById("main-content")?.focus();return;}nav(view||"landing",id?{id:decodeURIComponent(id)}:{});});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("input")&&!e.target.matches('[type="file"],[type="range"]')){const action=state.view==="login"?"do-login":state.view==="register"?"do-register":state.view==="verify-email"?"verify-code":state.view==="forgot"?"do-forgot":state.view==="reset"?"reset-password":null;if(action){e.preventDefault();document.querySelector(`[data-action="${action}"]`)?.click();}}});
+render();
+boot();
+</script>
+</body>
+</html>

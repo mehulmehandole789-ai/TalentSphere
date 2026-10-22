@@ -1,0 +1,25 @@
+{
+  "name": "talentsphere-backend",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "seed": "node src/db/seed.js",
+    "test": "node --test test/*.test.js",
+    "build": "node ../scripts/check.js",
+    "lint": "node ../scripts/check.js",
+    "create-admin": "node src/db/create-admin.js",
+    "payments:reconcile": "node src/payments/reconcile.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^10.1.2",
+    "razorpay": "^2.9.8"
+  }
+}
