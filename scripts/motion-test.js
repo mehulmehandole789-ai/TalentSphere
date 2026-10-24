@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({channel:'chrome',headless:true});try{const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://localhost:4000');await page.waitForSelector('.showcase');
+assert.equal(await page.locator('.hero-photo').evaluate(e=>getComputedStyle(e).animationName),'cinematic-drift');
+await page.locator('.showcase').scrollIntoViewIfNeeded();await page.mouse.move(0,0);const before=await page.locator('#slide-status').innerText();await page.waitForTimeout(4600);assert.notEqual(await page.locator('#slide-status').innerText(),before,'autoplay should advance visible carousel');
+await page.locator('.showcase').hover();const hovered=await page.locator('#slide-status').innerText();await page.waitForTimeout(4500);assert.equal(await page.locator('#slide-status').innerText(),hovered,'hover must pause autoplay');
+await page.locator('.showcase-controls [data-motion-toggle]').click();assert.equal(await page.locator('.hero-photo').evaluate(e=>getComputedStyle(e).animationPlayState),'paused');await page.mouse.move(0,0);const paused=await page.locator('#slide-status').innerText();await page.waitForTimeout(4500);assert.equal(await page.locator('#slide-status').innerText(),paused,'pause button must stop autoplay');
+await page.locator('.showcase-controls [data-motion-toggle]').click();await page.locator('.showcase').focus();await page.waitForTimeout(4500);assert.equal(await page.locator('#slide-status').innerText(),paused,'focus must pause autoplay');
+await page.emulateMedia({reducedMotion:'reduce'});assert.equal(await page.locator('.hero-photo').evaluate(e=>getComputedStyle(e).animationName),'none');assert.equal(await page.locator('.showcase-controls [data-motion-toggle]').isDisabled(),true);
+await page.goto('http://localhost:4000/#login');await page.waitForFunction(()=>!state.loading);assert.equal(await page.locator('.showcase').count(),0);assert.deepEqual(errors,[]);console.log('Motion passed: image drift, autoplay, hover/focus pause, explicit pause/play, reduced motion and navigation cleanup.');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
