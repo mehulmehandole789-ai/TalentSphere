@@ -40,6 +40,7 @@ app.use("/api/auth",(req,res,next)=>{
  }
  next();
 });
+app.use('/api/media',attachUser,require('./platform/media').router);
 app.use(express.json({limit:"7mb"}));
 app.use("/api",(req,res,next)=>{
  for(const value of Object.values(req.query))if(typeof value!=="string")return res.status(400).json({error:"Query parameters must be text."});
@@ -56,6 +57,9 @@ app.use(attachUser);
 app.get("/api/health", (req, res) => {require("./db").prepare("SELECT 1").get();res.json({ ok: true, database:"sqlite" });});
 app.get("/config.js",(req,res)=>res.type("application/javascript").send(`window.TALENTSPHERE_API_BASE=${JSON.stringify(process.env.PUBLIC_API_BASE || "/api").replace(/</g,"\\u003c")};`));
 
+app.use('/api/studio',require('./platform/profiles'));
+app.use('/api/studio',require('./platform/community'));
+app.use('/api/studio',require('./platform/bookings').router);
 app.use("/api/auth", authRoutes);
 app.use("/api/artists", artistRoutes);
 app.use("/api/events", eventRoutes);
@@ -85,6 +89,7 @@ app.use((err, req, res, next) => {
 module.exports = app;
 if (require.main === module) {
  const PORT = process.env.PORT || 4000;
+ require('./platform/outbox').start(app);
  const server=app.listen(PORT,()=>console.log(`TalentSphere running at http://localhost:${PORT}`));
  server.on("error",err=>{console.error(`Startup failed: ${err.code}. Check PORT and database configuration.`);process.exitCode=1;});
 }

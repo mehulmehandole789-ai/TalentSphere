@@ -35,4 +35,17 @@ const collisions=db.prepare("SELECT COUNT(*) n FROM (SELECT LOWER(TRIM(email)) F
 if(collisions)throw new Error("Existing accounts have conflicting normalized email addresses. Resolve ownership with administrator review; no users were deleted or merged.");
 db.exec("CREATE UNIQUE INDEX IF NOT EXISTS users_email_normalized ON users(LOWER(TRIM(email)))");
 db.exec(fs.readFileSync(path.join(__dirname,"../auth/schema.sql"),"utf8"));
+// Connected platform migration: add fields without rewriting historical agreements.
+const platformColumns = {
+ artist_profiles: [["details", "TEXT NOT NULL DEFAULT '{}'"],["visibility", "TEXT NOT NULL DEFAULT 'public'"],["moderationHidden","INTEGER NOT NULL DEFAULT 0"]],
+ bookings: [["workflowVersion","INTEGER NOT NULL DEFAULT 1"],["startsAt","TEXT"],["endsAt","TEXT"],["timeZone","TEXT NOT NULL DEFAULT 'Asia/Kolkata'"],["packageId","TEXT"],["acceptedQuoteId","TEXT"],["agreedSnapshot","TEXT"],["reservationExpiresAt","INTEGER"],["resolutionReason","TEXT"]],
+ reviews: [["bookingId","TEXT REFERENCES bookings(id)"],["authorId","TEXT REFERENCES users(id)"],["hidden","INTEGER NOT NULL DEFAULT 0"]],
+ notifications: [["bookingId","TEXT REFERENCES bookings(id)"]]
+};
+for(const [table,columns] of Object.entries(platformColumns))for(const [column,definition] of columns){
+ if(!db.prepare(`PRAGMA table_info(${table})`).all().some(c=>c.name===column))db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+}
+db.exec(fs.readFileSync(path.join(__dirname,'../platform/schema.sql'),'utf8'));
+db.exec('CREATE UNIQUE INDEX IF NOT EXISTS review_per_booking ON reviews(bookingId) WHERE bookingId IS NOT NULL');
+db.pragma('busy_timeout = 5000');
 module.exports = db;

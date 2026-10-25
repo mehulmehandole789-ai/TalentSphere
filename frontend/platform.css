@@ -1,0 +1,47 @@
+/* The connected workspace shares TalentSphere's ivory/charcoal/orange palette. */
+[hidden]{display:none!important}
+.platform-nav .btn-outline-paper,.platform-actions .btn-outline-paper,.platform-layout .btn-outline-paper,.platform-workspace .btn-outline-paper{color:var(--ink);border-color:var(--line-paper)}
+.platform-nav{display:flex;gap:10px;flex-wrap:wrap;padding-top:22px;padding-bottom:22px;border-bottom:1px solid var(--line-paper)}
+.platform-nav .btn{min-height:44px;font-size:12px;padding:10px 16px}
+.platform-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:28px;padding-top:36px;padding-bottom:70px;align-items:start}
+.platform-layout>*,.platform-workspace>*{min-width:0}.platform-layout .panel h2,.platform-workspace .panel h2,.platform-narrow .panel h2,.profile-content .panel h2{font-size:28px;margin-bottom:22px}
+.platform-layout .panel h3,.platform-workspace .panel h3{font-size:20px;margin-bottom:12px}
+.platform-layout .panel p,.platform-workspace .panel p,.platform-narrow .panel p{line-height:1.8;font-size:14px;margin:10px 0 18px}
+.platform-layout form,.platform-narrow form{margin-top:24px}
+.platform-narrow{max-width:850px;padding-top:36px;padding-bottom:70px}.platform-workspace{padding-top:36px;padding-bottom:70px}
+.platform-feedback{background:#f9e8df;color:#7c2c15;border:1px solid #bd7960;padding:14px;margin-bottom:20px;overflow-wrap:anywhere}
+.platform-feedback[hidden]{display:none}
+.platform-actions{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+.platform-actions .btn{min-height:44px}
+.package-summary{padding:24px 0;border-bottom:1px solid var(--line-paper)}.package-summary:last-child{border-bottom:0}
+.platform-list{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:24px 0;border-bottom:1px solid var(--line-paper)}
+.platform-list>div{min-width:0}.platform-list>.btn{flex-shrink:0}.platform-list p{margin-bottom:4px!important}
+.platform-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}.platform-facts dd{margin:10px 0 20px}
+.artist-cover{width:100%;height:280px;object-fit:cover;margin-bottom:24px}
+.performance-sample{margin:20px 0}.performance-sample video{width:100%;max-height:460px;background:#20201e}.performance-sample audio{width:100%}
+.ledger-totals{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.booking-progress{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:28px 0}
+.booking-progress li{border-top:3px solid var(--line-paper);padding-top:13px;color:var(--text-paper-mute);font-size:12px}
+.booking-progress li.is-done{border-color:var(--coral);color:var(--ink)}.booking-progress li[aria-current]{background:#f0e5db;padding:13px}
+.booking-progress small{display:block;font-size:10px;line-height:1.6;margin-top:8px}
+.conversation-messages{max-height:560px;overflow-y:auto;overscroll-behavior:contain}
+.conversation-message{padding:16px;margin-bottom:12px;background:var(--paper-dim);border-left:2px solid #b8ad9c;overflow-wrap:anywhere}
+.conversation-message.own{background:#f2e6dc;border-color:var(--coral)}
+.conversation-message p{white-space:pre-wrap;margin:8px 0!important}.conversation-message small{font-size:10px;color:var(--text-paper-mute)}
+.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0}.upload-item{border:1px solid var(--line-paper);padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.upload-item img{width:100%;height:160px;object-fit:cover}.upload-item small{overflow-wrap:anywhere}
+.media-options,.category-options{border:1px solid var(--line-paper);padding:18px;margin:20px 0}
+.media-options label,.category-options label,.check-label{display:flex;gap:10px;align-items:center;padding:10px 0;min-height:44px;font-size:13px}
+.media-options input,.category-options input,.check-label input{width:18px;height:18px;accent-color:var(--coral);flex-shrink:0}
+.calendar-heading{display:flex;gap:20px;align-items:center;justify-content:space-between;margin:25px 0}.calendar-heading h3{margin:0!important}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-bottom:24px}
+.calendar-grid>span{text-align:center;font-size:11px;padding:12px 0}.calendar-grid button{position:relative;border:1px solid var(--line-paper);background:var(--paper);min-height:48px;color:var(--ink)}
+.calendar-grid button.blocked{background:#e3d7cb}.calendar-grid button.booked{border-bottom:3px solid var(--coral)}
+.calendar-grid button[aria-pressed=true]{outline:2px solid var(--coral);outline-offset:1px}
+.calendar-grid button span{position:absolute;bottom:0;left:0;right:0;font-size:12px;color:var(--coral)}
+.platform-pagination{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin:28px 0;font-size:12px}
+.media-kit-intro{display:grid;grid-template-columns:220px 1fr;gap:36px;align-items:center}.media-kit-intro img{width:220px;height:220px;object-fit:cover}
+#event-matches .card-row{grid-template-columns:repeat(2,minmax(0,1fr))}progress{width:100%;accent-color:var(--coral)}
+@media(min-width:1101px) and (max-width:1280px){body:has(.navlinks button[data-view=build-event]) .navlinks{gap:12px}}
+@media(max-width:1024px){.platform-layout{grid-template-columns:1fr}.platform-layout>aside{display:grid;grid-template-columns:1fr;gap:20px}.platform-list{align-items:flex-start}.calendar-grid button{min-height:54px}}
+@media(max-width:600px){.platform-layout{padding-top:24px;gap:16px}.platform-layout .panel{padding:20px}.platform-layout .panel h2,.platform-workspace .panel h2{font-size:26px}.ledger-totals{grid-template-columns:1fr}.booking-progress{grid-template-columns:repeat(2,minmax(0,1fr))}.platform-list{flex-direction:column;gap:14px}.platform-facts{grid-template-columns:1fr}.media-kit-intro{grid-template-columns:1fr;gap:22px}.media-kit-intro img{width:160px;height:160px}.upload-grid{grid-template-columns:1fr}.calendar-grid{gap:3px}.calendar-grid button{min-height:44px}.calendar-heading h3{font-size:18px!important}#event-matches .card-row{grid-template-columns:1fr}.platform-nav{gap:8px}.platform-nav .btn{font-size:11px;padding:9px 11px}.artist-cover{height:190px}}

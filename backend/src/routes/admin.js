@@ -15,7 +15,7 @@ router.get("/users", (req, res) => {
     const base = publicUser(u);
     if (byUserId[u.id]) {
       const p = byUserId[u.id];
-      return { ...base, verified: !!p.verified, artistProfileId: p.id };
+      return { ...base, verified: !!p.verified&&!!db.prepare('SELECT id FROM artist_verifications WHERE artistId=? AND revoked=0 LIMIT 1').get(p.id), artistProfileId: p.id };
     }
     return base;
   });
@@ -46,7 +46,10 @@ router.get("/reports", (req, res) => {
 router.patch("/artists/:id/verify", (req, res) => {
   const profile = db.prepare("SELECT * FROM artist_profiles WHERE id = ?").get(req.params.id);
   if (!profile) return res.status(404).json({ error: "Artist not found." });
-  db.prepare("UPDATE artist_profiles SET verified = 1 WHERE id = ?").run(profile.id);
+  const details=typeof req.body.details==='string'&&req.body.details.trim()?req.body.details.trim().slice(0,2000):'Administrator reviewed the artist profile. This does not verify performance quality, identity documents or background.';
+  db.transaction(()=>{db.prepare("UPDATE artist_profiles SET verified = 1 WHERE id = ?").run(profile.id);
+  db.prepare('INSERT INTO artist_verifications(artistId,adminId,details) VALUES(?,?,?)').run(profile.id,req.user.id,details);
+  db.prepare('INSERT INTO admin_audit(adminId,action,targetId,note) VALUES(?,?,?,?)').run(req.user.id,'artist.verify',profile.id,details);})();
   const user = db.prepare("SELECT * FROM users WHERE id = ?").get(profile.userId);
   const updated = db.prepare("SELECT * FROM artist_profiles WHERE id = ?").get(profile.id);
   res.json(artistOut(updated, user));
@@ -57,6 +60,7 @@ router.patch("/users/:id/suspension", (req,res) => {
  if (!user) return res.status(404).json({error:"User not found."});
  if (user.role === "admin") return res.status(403).json({error:"Administrators cannot be suspended."});
  db.prepare("UPDATE users SET suspended = ?, tokenVersion = tokenVersion + 1 WHERE id = ?").run(user.suspended ? 0 : 1,user.id);
+ db.prepare('INSERT INTO admin_audit(adminId,action,targetId,note) VALUES(?,?,?,?)').run(req.user.id,'user.suspension',user.id,user.suspended?'Restored':'Suspended');
  res.json(publicUser(db.prepare("SELECT * FROM users WHERE id = ?").get(user.id)));
 });
 router.patch("/users/:id/approval",(req,res)=>{
@@ -66,6 +70,7 @@ router.patch("/users/:id/approval",(req,res)=>{
  const status=req.body.approvalStatus;
  if(!["approved","pending","rejected"].includes(status))return res.status(400).json({error:"Invalid approval status."});
  db.prepare("UPDATE users SET approvalStatus=?,tokenVersion=tokenVersion+1 WHERE id=?").run(status,user.id);
+ db.prepare('INSERT INTO admin_audit(adminId,action,targetId,note) VALUES(?,?,?,?)').run(req.user.id,'user.approval',user.id,status);
  res.json(publicUser(db.prepare("SELECT * FROM users WHERE id=?").get(user.id)));
 });
 module.exports = router;

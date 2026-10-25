@@ -82,14 +82,19 @@ const saveObservation = db.transaction((localId, remoteOrder, payment) => {
     if (['Cancelled', 'Declined'].includes(booking.status)) {
       flag(order.id, 'Payment captured after a booking was cancelled or declined. Review/refund in Razorpay; the booking stays cancelled.'); return;
     }
-    if (!['Accepted', 'Confirmed', 'Completed'].includes(booking.status)) {
+    if (!['Accepted', 'Payment Pending', 'Confirmed', 'Completed'].includes(booking.status)) {
       flag(order.id, 'Payment arrived outside the accepted booking lifecycle.'); return;
     }
-    if (paymentStatus === 'paid' && booking.status === 'Accepted') {
-      db.prepare("UPDATE bookings SET status='Confirmed' WHERE id=? AND status='Accepted'").run(booking.id);
+    if (paymentStatus === 'paid' && ['Accepted','Payment Pending'].includes(booking.status)) {
+      const C=require('../platform/common');
+      const reason=(booking.workflowVersion===2&&(!booking.reservationExpiresAt||booking.reservationExpiresAt<Date.now()))?'Payment arrived after the reservation expired.':C.conflict(booking.artistId,booking.startsAt||booking.date+'T00:00:00.000Z',booking.endsAt||new Date(Date.parse(booking.date+'T00:00:00Z')+86400000).toISOString(),booking.id,false);
+      if(reason){db.prepare('UPDATE bookings SET resolutionReason=? WHERE id=?').run(reason,booking.id);flag(order.id,reason+' Manual resolution required; no conflicting booking was confirmed.');C.timeline(booking,booking.status,null,reason);C.notify(booking.organizerId,booking.id,reason+' Contact support for payment resolution.');return;}
+
+      db.prepare("UPDATE bookings SET status='Confirmed' WHERE id=? AND status IN ('Accepted','Payment Pending')").run(booking.id);
+      require('../platform/common').timeline(booking,'Confirmed',null,'Verified Razorpay capture.');
       const artist = db.prepare('SELECT userId FROM artist_profiles WHERE id=?').get(booking.artistId);
       for (const userId of [booking.organizerId, artist?.userId].filter(Boolean)) {
-        db.prepare('INSERT INTO notifications(id,userId,text,kind) VALUES(?,?,?,?)').run(id('nt_'), userId, `Payment captured: booking ${booking.eventName} confirmed. Artist payout is not recorded.`, 'booking');
+        require('../platform/common').notify(userId,booking.id,`Payment captured: booking ${booking.eventName} confirmed. Artist payout is not recorded.`);
       }
     } else if (paymentStatus !== 'paid') {
       flag(order.id, 'Payment was refunded or partially refunded. Review the booking and refund in the Razorpay Dashboard.'); return;
@@ -98,7 +103,7 @@ const saveObservation = db.transaction((localId, remoteOrder, payment) => {
   db.prepare('UPDATE bookings SET paymentStatus=? WHERE id=?').run(paymentStatus, booking.id);
   db.prepare('UPDATE payment_orders SET status=?,updatedAt=?,reconciledAt=? WHERE id=?').run(
     paymentStatus === 'paid' ? 'captured' : paymentStatus, now(), now(), order.id);
-});
+}).immediate;
 
 async function recoverOrder(app, local) {
   const sdk = client(app);
@@ -134,9 +139,11 @@ async function reconcile(app, bookingId) {
   db.prepare('UPDATE payment_orders SET reconciledAt=? WHERE id=?').run(now(), local.id);
 }
 async function initiate(app, user, bookingId) {
+  require('../platform/common').expire();
   const booking = owner(user, bookingId);
-  if (booking.status !== 'Accepted' || !booking.paymentRequired || ['paid','authorized','review_required','refunded','partially_refunded'].includes(booking.paymentStatus)) throw fail(409, 'Only an accepted, unpaid booking can be paid.');
+  if (!['Accepted','Payment Pending'].includes(booking.status) || !booking.paymentRequired || ['paid','authorized','review_required','refunded','partially_refunded'].includes(booking.paymentStatus)) throw fail(409, 'Only an accepted, unpaid booking can be paid.');
   if (!Number.isSafeInteger(booking.finalAmountPaise) || booking.finalAmountPaise < 100) throw fail(400, 'The saved final price must be at least INR 1.00. Ask the artist to review the quote.');
+  if(booking.workflowVersion===2){const C=require('../platform/common');const reason=C.conflict(booking.artistId,booking.startsAt,booking.endsAt,booking.id);if(reason)throw fail(409,reason);}
   const sdk = client(app), config = configuration();
   let local = getOrder(bookingId);
   if (!local) {
@@ -160,8 +167,9 @@ async function initiate(app, user, bookingId) {
   await reconcile(app, bookingId);
   local = getOrder(bookingId);
   const fresh = owner(user, bookingId);
-  if (fresh.status !== 'Accepted' || local.reviewReason || ['captured', 'review_required'].includes(local.status)) throw fail(409, 'This booking is paid, cancelled or requires review. Refresh its payment status.');
+  if (!['Accepted','Payment Pending'].includes(fresh.status) || local.reviewReason || ['captured', 'review_required'].includes(local.status)) throw fail(409, 'This booking is paid, cancelled or requires review. Refresh its payment status.');
   db.prepare("UPDATE payment_orders SET sessionState='open',sessionExpiresAt=?,updatedAt=? WHERE id=?").run(Date.now() + 15 * 60 * 1000, now(), local.id);
+  if(fresh.workflowVersion===2&&fresh.status==='Accepted'){db.prepare("UPDATE bookings SET status='Payment Pending' WHERE id=?").run(bookingId);require('../platform/common').timeline(fresh,'Payment Pending',user.id);}
   return { keyId: config.keyId, orderId: local.providerOrderId, amountPaise: local.amountPaise, currency: 'INR', mode: local.mode,
     bookingId, sessionExpiresAt: getOrder(bookingId).sessionExpiresAt };
 }
@@ -186,7 +194,7 @@ function snapshot(bookingId) {
   }
   return { booking, order, transactions, displayStatus, mode: order?.mode || configuration().mode, configured: configuration().enabled,
     artistName: db.prepare('SELECT u.name FROM users u JOIN artist_profiles a ON a.userId=u.id WHERE a.id=?').get(booking.artistId)?.name || 'Artist',
-    canPay: booking.status === 'Accepted' && booking.paymentRequired === 1 && !order?.reviewReason && !['paid','authorized','refunded','partially_refunded','review_required'].includes(booking.paymentStatus) };
+    canPay: ['Accepted','Payment Pending'].includes(booking.status) && booking.paymentRequired === 1 && !order?.reviewReason && !['paid','authorized','refunded','partially_refunded','review_required'].includes(booking.paymentStatus) };
 }
 async function webhook(app, raw, signature, eventId) {
   const config = configuration();

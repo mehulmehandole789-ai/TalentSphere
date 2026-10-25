@@ -390,6 +390,7 @@ button[aria-busy=true]{opacity:.65;cursor:wait;pointer-events:none}
 </style>
 <link rel="stylesheet" href="/design.css">
 <link rel="stylesheet" href="/creative.css">
+<link rel="stylesheet" href="/platform.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="theme-color" content="#faf8f4">
 <meta name="description" content="Discover independent artists, book creative talent, and find your next collaborator with TalentSphere.">
@@ -402,6 +403,7 @@ button[aria-busy=true]{opacity:.65;cursor:wait;pointer-events:none}
 
 <script src="/config.js"></script>
 <script src="/creative.js"></script>
+<script src="/platform.js"></script>
 <script>
 /* =========================================================
    TALENTSPHERE FRONTEND
@@ -664,6 +666,7 @@ async function nav(view, params={}){
     await refreshPublicData();
     await refreshRoleData();
     await loadPaymentPage();
+    if(window.platformLoad)await window.platformLoad(view);
     if(view==="artist-profile" && params.id){
       const detail = await api(`/artists/${params.id}`);
       REVIEWS = detail.reviews;
@@ -738,7 +741,7 @@ async function boot(){
     if(state.role==="admin"){ADMIN_REPORTS=await api("/admin/reports");ADMIN_USERS=await api("/admin/users");}
   }
   if(state.authRedirect){state.view=state.authRedirect;state.params={};history.replaceState(null,"","#"+state.authRedirect);state.authRedirect=null;}
-  try{await loadPaymentPage();}catch(err){state.pageError=err.message;}
+  try{await loadPaymentPage();if(window.platformLoad)await window.platformLoad(state.view);}catch(err){state.pageError=err.message;}
   state.loading = false;
   render();
 }
@@ -755,7 +758,7 @@ function renderNav(){
   let links = [];
   if(!r){
     links = [
-      ["explore","Explore artists"],["events","Events"],["collaborate","Collaborate"],["about","How it works"],
+      ["explore","Explore artists"],["events","Events"],["collaborate","Collaborate"],["about","How it works"],["build-event","Build your event"],
     ];
   } else if(r==="artist"){
     links = [["artist-dashboard","Dashboard"],["explore","Discover"],["events","Events"],["artist-bookings","Bookings"],["collaborate","Collaborations"],["artist-portfolio","My portfolio"]];
@@ -801,6 +804,7 @@ function renderNav(){
 
 /* ---------------- ARTIST / EVENT CARD PARTIALS ---------------- */
 function profileImage(a){
+ if(a?.details?.photo)return a.details.photo;
  if(a?.media?.[0])return a.media[0];
  const portraits={'Meera Anand':1,'Rohan Kapoor':2,'Ananya &amp; The Waves':3,'Kabir Rehman':4,'DJ Vireo':5,'Priya Suresh':6,'Arjun Mehta':7,'Ishaani Roy':8};
  const portrait=a?.isExample&&portraits[a.name];
@@ -855,7 +859,7 @@ function renderLanding(){
  <section class="final-cta"><div class="wrap"><span class="eyebrow on-ink">YOUR NEXT CHAPTER STARTS WITH A CONNECTION</span><h2>Bring your talent.<br>Find your people.</h2><div class="hero-ctas"><a href="#register" class="btn btn-coral" data-action="nav" data-view="register" data-role="artist">Join as an Artist &#8599;</a><a href="#explore" class="btn btn-outline-ink" data-action="nav" data-view="explore">Explore Artists</a></div></div></section>${renderFooter()}`;
 }
 
-function renderFooter(){return `<footer class="footer"><div class="wrap"><div class="foot-grid"><div><button class="brand" data-action="nav" data-view="landing" style="background:none;border:0;padding:0"><span class="dot"></span>TalentSphere</button><p style="max-width:290px;margin-top:16px">A place for creative people<br>and the ideas that bring them together.</p></div><div><h5>DISCOVER</h5><a href="#explore" data-action="nav" data-view="explore">Explore artists</a><a href="#events" data-action="nav" data-view="events">Find opportunities</a><a href="#collaborate" data-action="nav" data-view="collaborate">Collaborate</a></div><div><h5>GET INVOLVED</h5><a href="#register" data-action="nav" data-view="register" data-role="artist">Join as an artist</a><a href="#register" data-action="nav" data-view="register" data-role="organizer">Book talent</a><a href="#about" data-action="nav" data-view="about">About TalentSphere</a></div></div><div class="foot-bottom"><span>&copy; ${new Date().getFullYear()} TalentSphere</span><span>Independent talent. Meaningful connections.</span></div></div></footer>`;}
+function renderFooter(){return `<footer class="footer"><div class="wrap"><div class="foot-grid"><div><button class="brand" data-action="nav" data-view="landing" style="background:none;border:0;padding:0"><span class="dot"></span>TalentSphere</button><p style="max-width:290px;margin-top:16px">A place for creative people<br>and the ideas that bring them together.</p></div><div><h5>DISCOVER</h5><a href="#build-event" data-action="nav" data-view="build-event">Build your event</a><a href="#collaboration-board" data-action="nav" data-view="collaboration-board">Collaboration board</a><a href="#explore" data-action="nav" data-view="explore">Explore artists</a><a href="#events" data-action="nav" data-view="events">Find opportunities</a><a href="#collaborate" data-action="nav" data-view="collaborate">Collaborate</a></div><div><h5>GET INVOLVED</h5><a href="#register" data-action="nav" data-view="register" data-role="artist">Join as an artist</a><a href="#register" data-action="nav" data-view="register" data-role="organizer">Book talent</a><a href="#about" data-action="nav" data-view="about">About TalentSphere</a></div></div><div class="foot-bottom"><span>&copy; ${new Date().getFullYear()} TalentSphere</span><span>Independent talent. Meaningful connections.</span></div></div></footer>`;}
 
 function renderAbout(){
   return `
@@ -1252,7 +1256,7 @@ function renderNotifications(){
       ${NOTIFICATIONS.length? NOTIFICATIONS.map(n=>`
         <div class="list-row" style="${n.read?'':'background:rgba(242,169,59,.06);'}">
           <div class="avatar" style="width:38px;height:38px;font-size:16px;background:var(--paper-dim);color:var(--text-paper);">${icons[n.kind]||icon('bell',16)}</div>
-          <div class="lr-main"><div class="lr-title">${n.text}</div><div class="lr-sub">${n.when}</div></div>
+          <div class="lr-main"><div class="lr-title">${n.text}</div><div class="lr-sub">${n.when}</div>${n.bookingId?`<a class="text-link" href="#booking/${n.bookingId}" data-action="nav" data-view="booking" data-id="${n.bookingId}">Open booking</a>`:''}</div>
           ${!n.read?`<button class="btn btn-sm btn-outline-paper" data-action="read-notification" data-id="${n.id}">Mark read</button>`:''}
         </div>`).join("")
       : `<div class="empty-state"><div class="ic">${icon('bell',36,1.4)}</div><h4>You're all caught up.</h4><p>New activity will show up here.</p></div>`}
@@ -1390,6 +1394,7 @@ function renderAdminBookings(){
 }
 
 function currentPage(){
+  if(window.platformViews?.includes(state.view))return window.renderPlatformPage();
   switch(state.view){
     case "landing": return renderLanding();
     case "about": return renderAbout();
@@ -1456,6 +1461,7 @@ function render(){
   document.querySelectorAll('table.tbl').forEach(table=>{const body=table.tBodies[0];if(body&&!body.children.length){const cell=body.insertRow().insertCell();cell.colSpan=table.querySelectorAll('thead th').length;cell.className='table-empty';cell.textContent='No records yet. New activity will appear here.';}});
   syncAuthControls();
   bindInputs();
+  if(window.platformEnhance)window.platformEnhance();
   if(window.initCreative)window.initCreative(state.view);
  document.querySelectorAll("label").forEach((label,i)=>{const input=label.parentElement.querySelector("input,textarea,select");if(input){if(!input.id)input.id="field-"+i;label.htmlFor=input.id;}});
  document.querySelectorAll("span[data-action],div[data-action]").forEach(el=>{el.tabIndex=0;el.setAttribute("role","button");el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();el.click();}};});
@@ -1584,7 +1590,7 @@ document.addEventListener("click", async (e)=>{
 
       case "book": {
         if(!state.role){ await nav("login"); toast("Log in to book an artist.", true); break; }
-        await nav("book", {id});
+        await nav("enquire", {id});
         break;
       }
       case "send-booking-request": {

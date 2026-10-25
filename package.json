@@ -13,7 +13,9 @@
     "test:browser": "node scripts/browser-test.js",
     "create-admin": "npm --prefix backend run create-admin",
     "payments:reconcile": "npm --prefix backend run payments:reconcile",
-    "seed:activity": "node backend/src/db/seed-activity.js"
+    "seed:activity": "node backend/src/db/seed-activity.js",
+    "test:platform:browser": "node scripts/platform-browser-test.js",
+    "migrate:media": "node backend/src/db/migrate-media.js"
   },
   "devDependencies": {
     "playwright": "^1.56.0"

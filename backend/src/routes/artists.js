@@ -13,7 +13,8 @@ function loadArtist(profile) {
 router.get("/", (req, res) => {
   const { category, location, maxPrice, q, sort } = req.query;
 
-  let rows = db.prepare("SELECT * FROM artist_profiles").all().map(loadArtist);
+  let rows = db.prepare("SELECT a.* FROM artist_profiles a JOIN users u ON u.id=a.userId WHERE a.visibility='public' AND a.moderationHidden=0 AND u.suspended=0 AND u.approvalStatus NOT IN ('pending','rejected')").all().map(loadArtist);
+  if(req.query.startsAt&&req.query.endsAt){try{const C=require('../platform/common'),r=C.range(req.query.startsAt,req.query.endsAt);rows=rows.filter(a=>!C.conflict(a.id,r.startsAt,r.endsAt));}catch(e){return res.status(400).json({error:e.message});}}
 
   if (category && category !== "All") rows = rows.filter((a) => a.category === category);
   if (location && location !== "All") rows = rows.filter((a) => a.location === location);
@@ -37,16 +38,16 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  const profile = db.prepare("SELECT * FROM artist_profiles WHERE id = ?").get(req.params.id);
+  let profile;try{profile=require('../platform/common').visible(req.params.id,req.user);}catch(e){return res.status(e.status).json({error:e.message});}
   if (!profile) return res.status(404).json({ error: "Artist not found." });
 
   const artist = loadArtist(profile);
   const reviews = db
-    .prepare("SELECT * FROM reviews WHERE artistId = ? ORDER BY createdAt DESC")
+    .prepare("SELECT r.* FROM reviews r JOIN bookings b ON b.id=r.bookingId WHERE r.artistId = ? AND r.hidden=0 AND b.status='Completed' ORDER BY r.createdAt DESC")
     .all(profile.id)
     .map(reviewOut);
   const similar = db
-    .prepare("SELECT * FROM artist_profiles WHERE category = ? AND id != ? LIMIT 3")
+    .prepare("SELECT a.* FROM artist_profiles a JOIN users u ON u.id=a.userId WHERE a.category = ? AND a.id != ? AND a.visibility='public' AND a.moderationHidden=0 AND u.suspended=0 AND u.approvalStatus NOT IN ('pending','rejected') LIMIT 3")
     .all(profile.category, profile.id)
     .map(loadArtist);
 
@@ -102,7 +103,8 @@ router.post("/me/portfolio", requireRole("artist"), (req,res)=>{
  const valid=(match[1]==="png"&&bytes.subarray(0,8).toString("hex")==="89504e470d0a1a0a")||(match[1]==="jpeg"&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255)||(match[1]==="webp"&&bytes.toString("ascii",0,4)==="RIFF"&&bytes.toString("ascii",8,12)==="WEBP");
  if(!valid||bytes.length>5*1024*1024)return res.status(400).json({error:"Invalid image or image exceeds 5 MB."});
  const media=JSON.parse(profile.media||"[]");if(media.length>=6)return res.status(400).json({error:"Maximum six portfolio images. Remove one first."});
- media.push(data);db.prepare("UPDATE artist_profiles SET media=? WHERE id=?").run(JSON.stringify(media),profile.id);
+ const stored=require('../platform/media').store(profile,bytes,'image/'+match[1]);
+ media.push(stored.url);db.prepare("UPDATE artist_profiles SET media=? WHERE id=?").run(JSON.stringify(media),profile.id);
  res.status(201).json(loadArtist(db.prepare("SELECT * FROM artist_profiles WHERE id=?").get(profile.id)));
 });
 router.delete("/me/portfolio/:index",requireRole("artist"),(req,res)=>{

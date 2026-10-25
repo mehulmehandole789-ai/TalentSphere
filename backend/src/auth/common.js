@@ -32,4 +32,4 @@ function accountBlock(user) {
  if(!['not_required','approved'].includes(user.approvalStatus))return {code:'ACCOUNT_UNAVAILABLE',message:'Your account needs administrator review.'};
  return null;
 }
-module.exports={normalizeEmail,validEmail,findUser,authError,rateLimit,accountBlock};
+module.exports={limited,normalizeEmail,validEmail,findUser,authError,rateLimit,accountBlock};

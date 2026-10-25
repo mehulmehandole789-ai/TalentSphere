@@ -1,5 +1,7 @@
 # TalentSphere
 
+Connected profiles, packages, availability, quotations, booking conversations, verified reviews and marketplace tools are documented in [CONNECTED_PLATFORM.md](CONNECTED_PLATFORM.md). New primary booking actions use the connected enquiry-to-payment journey; historical URLs remain supported.
+
 Artist discovery, event applications, private bookings and creative collaborations.
 The existing stack is preserved: **Node.js / Express, SQLite (better-sqlite3), and a vanilla JavaScript single-page frontend**. There is no React build, MongoDB service or separate frontend server to configure. Express serves the frontend and API together.
 
@@ -98,13 +100,13 @@ Pending / Accepted / Confirmed -> Cancelled (the requesting organizer)
 Confirmed -> Completed (the organizer, on/after the event date)
 ```
 
-A pending/accepted/confirmed booking reserves the artist's entire date; conflicting requests are rejected. Hourly availability and timezone-specific scheduling are outside this model. Applications can only be accepted/rejected by the event owner; the applying artist may withdraw a pending application. Only a collaboration recipient may accept/decline a pending proposal.
+New enquiries use UTC time ranges with an explicit IANA display time zone. Pending enquiries do not reserve dates. Accepting a quotation reserves the time for up to 15 minutes; server confirmation rechecks conflicts. Legacy confirmed bookings without time ranges reserve their recorded date. See CONNECTED_PLATFORM.md. Applications can only be accepted/rejected by the event owner; the applying artist may withdraw a pending application. Only a collaboration recipient may accept/decline a pending proposal.
 
 **Payments:** Razorpay Standard Checkout integration is implemented, with Test Mode as the default. Provide your own keys/webhook secret to enable it. Only verified provider capture confirms a new booking; manual confirmation is disabled. New bookings have zero platform fee, separate payment status and integer-paise amounts. Historical confirmed/completed bookings remain historical agreements, with no invented payment. See [PAYMENTS.md](PAYMENTS.md) for account setup, UPI QR limitations, webhooks, reconciliation and Live Mode steps.
 
 ## Portfolio storage and backups
 
-Uploads accept PNG, JPEG or WebP only, verify file signatures, limit each image to 5 MB and each profile to six images. Images are stored as data URLs in the configured SQLite database; the first image is the profile photo. This is a local storage solution with no cloud credentials. Public profiles intentionally expose these images. Keep uploads small: for a larger deployment, migrate media to object storage and paginate API results; current discovery pagination happens in the browser.
+Uploads accept PNG, JPEG or WebP only, verify file signatures, limit each image to 5 MB and each profile to six images. New images are stored as protected local files; SQLite holds references and metadata. Existing data URLs remain readable and can be migrated with npm run migrate:media. Extended profiles support a dedicated profile photo, cover and performance samples. Back up backend/uploads (or MEDIA_DIR) with the database. This is a local storage solution with no cloud credentials. Public profiles intentionally expose these images. Keep uploads small: for a larger deployment, migrate media to object storage and paginate API results; current discovery pagination happens in the browser.
 
 Back up the SQLite database using SQLite's backup API, or stop the app and copy the database safely. Do not copy just the database file while writes are occurring in WAL mode. No data deletion or reset command is part of setup.
 

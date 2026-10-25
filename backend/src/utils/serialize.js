@@ -15,6 +15,10 @@ function publicUser(u) {
 
 // Joins an artist_profiles row with its owning user row (name/location live on users).
 function artistOut(profile, user) {
+  const db=require('../db');
+  const aggregate=db.prepare("SELECT COALESCE(AVG(r.rating),0) rating,COUNT(*) count FROM reviews r JOIN bookings b ON b.id=r.bookingId WHERE r.artistId=? AND r.hidden=0 AND b.status='Completed'").get(profile.id);
+  const verification=db.prepare('SELECT details,createdAt FROM artist_verifications WHERE artistId=? AND revoked=0 ORDER BY id DESC LIMIT 1').get(profile.id);
+
   return {
     id: profile.id,
     userId: profile.userId,
@@ -22,15 +26,18 @@ function artistOut(profile, user) {
     media: JSON.parse(profile.media || "[]"),
     category: profile.category,
     location: profile.location,
-    rating: profile.rating,
-    reviews: profile.reviewsCount,
+    rating: aggregate.rating,
+    reviews: aggregate.count,
     price: profile.price,
     exp: profile.exp,
     bookings: profile.bookingsCount,
     bio: profile.bio,
     skills: JSON.parse(profile.skills || "[]"),
     availability: profile.availability,
-    verified: !!profile.verified,
+    verified: !!profile.verified && !!verification,
+    verification: verification||null,
+    details:JSON.parse(profile.details||"{}"),
+    visibility:profile.visibility,
     joined: profile.joined,
     gradSeed: profile.gradSeed,
   };
