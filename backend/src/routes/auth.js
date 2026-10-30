@@ -48,7 +48,7 @@ router.post('/verify-email',rateLimit('verification',30,15*60*1000),safe((req,re
 router.post('/resend-verification',rateLimit('resend',10,60*60*1000),safe(async(req,res)=>{
  const email=normalizeEmail(req.body.email);if(!validEmail(email))throw authError(400,'INVALID_EMAIL','Enter a valid email address.');
  const user=findUser(email);
- if(!user||user.emailVerified)return res.json({emailSent:false,message:'If you have an unverified account, use its latest code. Otherwise log in or register to continue.'});
+ if(!user||user.emailVerified)return res.json({emailSent:false,message:'No new verification email was sent. If your email is already verified, log in or reset your password. If you have not created an account, register first.'});
  res.json(await sendCode(req.app,user));
 }));
 router.post('/login',rateLimit('login',30,15*60*1000),safe(async(req,res)=>{

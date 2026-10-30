@@ -1,0 +1,6 @@
+'use strict';
+const {parentPort,workerData,threadId}=require('node:worker_threads');
+const pending=new Map();let sequence=0;
+parentPort.on('message',message=>{const p=pending.get(message.requestId);if(p){pending.delete(message.requestId);message.error?p.reject(new Error(message.error)):p.resolve(message.result);}});
+const request=command=>new Promise((resolve,reject)=>{const requestId=threadId+':'+sequence++;pending.set(requestId,{resolve,reject});parentPort.postMessage({requestId,command});});
+(async()=>{if(workerData.fail)throw new Error('Intentional worker failure');const latencies=[];let conflicts=0;const started=performance.now();for(let i=0;i<workerData.operations;i+=8){await Promise.all(Array.from({length:Math.min(8,workerData.operations-i)},async(_,j)=>{const begin=performance.now();const app=workerData.applications[(i+j)%workerData.applications.length];const q=await request({op:'enqueue',applicationId:app});const result=await request({op:'claim',id:q.id});if(result?.conflict)conflicts++;latencies.push(performance.now()-begin);}));}parentPort.postMessage({done:true,threadId,latencies,conflicts,durationMs:performance.now()-started});parentPort.close();})().catch(error=>{setImmediate(()=>{throw error;});});

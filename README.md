@@ -141,3 +141,6 @@ Discovery includes mobile filter controls, removable active filters and result c
 The browser suite checks the original workflows plus gallery keyboard interaction, mobile filtering/reset, booking summaries, favicon, titles and public/error-page layouts at 390/768/1440 pixels. Screenshots from visual review are saved in ignored `test-results/`.
 
 Payment implementation and verification details: [PAYMENTS.md](PAYMENTS.md). Provider automated tests and the browser Checkout stub are explicitly mocked; no real provider payment or QR scan has been verified.
+# Talent Recruitment upgrade
+
+The existing artist platform now includes **Recruitment** at `/recruitment.html`. See [setup, architecture, algorithms and teacher demo](RECRUITMENT.md), [requirements and verification](RECRUITMENT_REQUIREMENTS.md), and [ER diagram](RECRUITMENT_ER.md). Run `npm run recruitment:migrate` before starting an existing installation; it creates WAL-aware SQLite backups and preserves existing records.

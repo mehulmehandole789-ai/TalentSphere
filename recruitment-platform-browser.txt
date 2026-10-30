@@ -1,0 +1,7 @@
+
+> talentsphere@1.1.0 test:platform:browser
+> node scripts/platform-browser-test.js
+
+Profile, media and package UI passed
+Enquiry, message and quote UI passed
+Connected browser passed: profile upload/package/calendar; discovery → enquiry → message → quotation → acceptance → MOCK Razorpay capture → receipt → completion → review; saved artists, media kit, collaboration applications and event matching; role pages at 375/768/1024/1440; no browser errors.

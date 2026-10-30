@@ -768,7 +768,8 @@ function renderNav(){
     links = [["admin-dashboard","Dashboard"],["admin-users","Users"],["admin-events","Events"],["admin-bookings","Bookings"],["admin-payments","Payments"]];
   }
   const activeSet = new Set([state.view]);
-  const linksHtml = links.map(([v,label])=>
+  const recruitmentLink='<a href="/recruitment.html">Recruitment</a>';
+  const linksHtml = recruitmentLink + links.map(([v,label])=>
     v==='explore'?`<div class="explore-menu"><button class="navlink" id="explore-trigger" aria-expanded="false" aria-controls="explore-panel">${label} <span aria-hidden="true">&#8964;</span></button><div id="explore-panel" class="mega-panel" hidden><div><span class="eyebrow">Find your creative match</span><h2>Talent with a point of view.</h2><div class="mega-categories">${CATEGORIES.map(c=>`<a href="#explore" data-action="nav" data-view="explore" data-category="${c.name}">${c.name} <span aria-hidden="true">&#8599;</span></a>`).join('')}</div><a href="#explore" data-action="nav" data-view="explore">Explore all artists &#8594;</a></div><figure><img src="/assets/events/concert.jpg" width="600" height="400" alt="An audience gathered for live music" loading="lazy"><figcaption>For the moments that stay with you.</figcaption></figure></div></div>`:`<button class="navlink ${activeSet.has(v)?'active':''}" data-action="nav" data-view="${v}">${label}</button>`
   ).join("");
 

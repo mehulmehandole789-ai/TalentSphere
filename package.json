@@ -3,6 +3,11 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
+    "recruitment:migrate": "node backend/src/recruitment/cli.js migrate",
+    "recruitment:demo": "node backend/src/recruitment/cli.js demo 20",
+    "recruitment:verify": "node backend/src/recruitment/cli.js verify",
+    "test:recruitment:browser": "node scripts/recruitment-browser-test.js",
+    "recruitment:stress": "node backend/src/recruitment/cli.js stress",
     "setup": "npm --prefix backend ci",
     "dev": "npm --prefix backend run dev",
     "start": "npm --prefix backend start",

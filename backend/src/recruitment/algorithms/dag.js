@@ -1,0 +1,9 @@
+'use strict';
+class DAG {
+ constructor(nodes,edges){if(!Array.isArray(nodes)||nodes.length<1||nodes.length>64||new Set(nodes).size!==nodes.length||nodes.some(n=>typeof n!=='string'||!/^\w{1,80}$/.test(n)))throw Object.assign(new Error('Provide 1–64 unique task identifiers'),{status:400});if(!Array.isArray(edges)||edges.length>512)throw Object.assign(new Error('Maximum 512 edges'),{status:400});this.nodes=nodes;this.edges=edges;this.adj=new Map(nodes.map(n=>[n,[]]));this.indegree=new Map(nodes.map(n=>[n,0]));const seen=new Set();for(const [a,b]of edges){if(!this.adj.has(a)||!this.adj.has(b)||seen.has(a+'|'+b))throw Object.assign(new Error('Invalid or repeated edge'),{status:400});seen.add(a+'|'+b);this.adj.get(a).push(b);this.indegree.set(b,this.indegree.get(b)+1);}const cycle=this.cycle();if(cycle)throw Object.assign(new Error(`Cycle: ${cycle.join(' -> ')}`),{status:400,cycle});this.order=this.topological();}
+ cycle(){const colors=new Map(),path=[];const visit=n=>{if(colors.get(n)===1)return [...path.slice(path.indexOf(n)),n];if(colors.get(n)===2)return null;colors.set(n,1);path.push(n);for(const c of this.adj.get(n)){const r=visit(c);if(r)return r;}path.pop();colors.set(n,2);return null;};for(const n of this.nodes){const r=visit(n);if(r)return r;}return null;}
+ topological(){const d=new Map(this.indegree),q=this.nodes.filter(n=>d.get(n)===0),result=[];for(let i=0;i<q.length;i++){const n=q[i];result.push(n);for(const c of this.adj.get(n)){d.set(c,d.get(c)-1);if(!d.get(c))q.push(c);}}return result;}
+}
+const nodes=['Application_Submitted','Identity_Resolution','Rule_Evaluation','Technical_Panel_Clearance','Background_Check','Offer_Generation'];
+const edges=[[nodes[0],nodes[1]],[nodes[1],nodes[2]],[nodes[2],nodes[3]],[nodes[2],nodes[4]],[nodes[3],nodes[5]],[nodes[4],nodes[5]]];
+module.exports={DAG,defaultGraph:{nodes,edges}};

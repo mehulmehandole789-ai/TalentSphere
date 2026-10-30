@@ -1,0 +1,79 @@
+
+> talentsphere@1.1.0 recruitment:stress
+> node backend/src/recruitment/cli.js stress 50000
+
+node.exe : Synthetic records processed: 10000
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Users\LOQ\AppData\Roaming\np ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Synthetic records processed: 10000:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Synthetic records processed: 20000
+Synthetic records processed: 30000
+Synthetic records processed: 40000
+{
+  "recordCount": 50000,
+  "synthetic": true,
+  "identity": {
+    "elapsedMs": 547354.6048999999,
+    "recordsPerSecond": 91.3484595770138,
+    "comparisons": 744051,
+    "index": {
+      "estimatedActiveBytes": 5104076,
+      "budgetBytes": 8388608,
+      "postingCount": 249932,
+      "activeBuckets": 33885,
+      "spilledBuckets": 134032,
+      "maxObservedBucket": 31,
+      "processHeapBytes": 27456800
+    }
+  },
+  "workers": 4,
+  "operationsPerWorker": 12500,
+  "completedOperations": 50000,
+  "actualThreadIds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "workerFailures": [],
+  "elapsedMs": 20270.167299999972,
+  "throughputPerSecond": 2466.6791970681006,
+  "latencyMs": {
+    "p50": 9.711499999975786,
+    "p95": 23.96330000006128,
+    "p99": 42.73070000007283
+  },
+  "contention": 99863,
+  "conflicts": 49000,
+  "retries": 0,
+  "queue": {
+    "depth": 0,
+    "contention": 99863,
+    "waiting": 0,
+    "conflicts": 49000,
+    "estimatedHeapBytes": 0
+  },
+  "memory": {
+    "rss": 361148416,
+    "heapTotal": 162246656,
+    "heapUsed": 39795944,
+    "external": 2315127,
+    "arrayBuffers": 279189
+  },
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v24.14.1",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-12450HX",
+    "logicalCPUs": 12,
+    "totalMemoryBytes": 12595355648
+  },
+  "audit": {
+    "valid": true,
+    "entries": 102004,
+    "head": "f2fa35584fb6221b17f05c4a4fde57c7fecdeff0b90fd336e9656545d1c67294"
+  }
+}

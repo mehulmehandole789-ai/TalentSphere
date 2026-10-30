@@ -1,0 +1,5 @@
+
+> talentsphere@1.1.0 test:browser
+> node scripts/browser-test.js
+
+Browser passed: MOCK email password recovery/reset/confirmation/reload/invalid links, registration/verification/cooldown/refresh, login/logout, profile/media persistence, discovery, event publishing, applications, artist acceptance, MOCK Razorpay abandoned/failed/retry/capture-confirmation/receipt/refresh, collaboration proposals/decline, admin verification/suspension/restore, refresh and responsive overflow at 375/390/768/1024/1440 px. Gallery keyboard preview, mobile active filters/reset, booking summary, favicon, titles and public/error pages also passed. No browser errors or failed API responses.

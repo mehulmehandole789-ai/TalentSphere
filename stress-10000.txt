@@ -1,0 +1,71 @@
+
+> talentsphere@1.1.0 recruitment:stress
+> node backend/src/recruitment/cli.js stress 10000
+
+{
+  "recordCount": 10000,
+  "synthetic": true,
+  "preloadedQueueEntries": 1000,
+  "identity": {
+    "elapsedMs": 19207.3884,
+    "recordsPerSecond": 520.6329872519265,
+    "comparisons": 28929,
+    "index": {
+      "estimatedActiveBytes": 6032490,
+      "budgetBytes": 8388608,
+      "postingCount": 49989,
+      "activeBuckets": 39877,
+      "spilledBuckets": 0,
+      "maxObservedBucket": 25,
+      "processHeapBytes": 30030856
+    }
+  },
+  "workers": 4,
+  "operationsPerWorker": 2500,
+  "completedOperations": 10000,
+  "actualThreadIds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "workerFailures": [],
+  "elapsedMs": 12499.923799999997,
+  "throughputPerSecond": 800.0048768297293,
+  "latencyMs": {
+    "p50": 30.71180000000095,
+    "p95": 62.22750000000087,
+    "p99": 141.4577999999965
+  },
+  "contention": 19999,
+  "conflicts": 9000,
+  "retries": 0,
+  "queue": {
+    "depth": 0,
+    "peakDepth": 1000,
+    "contention": 19999,
+    "waiting": 0,
+    "conflicts": 9000,
+    "estimatedHeapBytes": 0
+  },
+  "memory": {
+    "rss": 152010752,
+    "heapTotal": 52510720,
+    "heapUsed": 23591016,
+    "external": 1937460,
+    "arrayBuffers": 82159
+  },
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v24.14.1",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-12450HX",
+    "logicalCPUs": 12,
+    "totalMemoryBytes": 12595355648
+  },
+  "audit": {
+    "valid": true,
+    "entries": 32004,
+    "head": "db85d8cc61ffeaaae2a20e87d003bc484ed14ecf5c62344be7c3da47627a80db"
+  }
+}

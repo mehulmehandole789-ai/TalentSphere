@@ -5,6 +5,13 @@ const Database = require("better-sqlite3");
 const DB_PATH = process.env.DATABASE_PATH ? path.resolve(process.env.DATABASE_PATH) : path.join(__dirname, "..", "..", "data.db");
 const db = new Database(DB_PATH);
 
+// Back up before any legacy initialization writes on the first engine upgrade.
+// SQLite backup includes WAL; copying data.db alone would lose committed frames.
+if (!db.prepare("SELECT 1 FROM sqlite_master WHERE name='recruitment_migrations'").get() && db.prepare("SELECT 1 FROM sqlite_master WHERE name='users'").get()) {
+ const result=require('node:child_process').spawnSync(process.execPath,[path.join(__dirname,'../recruitment/backup.js'),DB_PATH],{timeout:60000});
+ if(result.status!==0)throw new Error('Pre-migration online backup failed; migration stopped.');
+}
+
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 

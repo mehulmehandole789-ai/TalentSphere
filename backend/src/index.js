@@ -41,10 +41,15 @@ app.use("/api/auth",(req,res,next)=>{
  next();
 });
 app.use('/api/media',attachUser,require('./platform/media').router);
+// Streaming imports must reach their consumer before any body buffering middleware.
+app.use('/api/recruitment', (req,res,next)=>{
+ if(req.method!=='POST'||req.path!=='/imports')return next();
+ attachUser(req,res,()=>require('./recruitment/routes').router(req,res,next));
+});
 app.use(express.json({limit:"7mb"}));
 app.use("/api",(req,res,next)=>{
  for(const value of Object.values(req.query))if(typeof value!=="string")return res.status(400).json({error:"Query parameters must be text."});
- function valid(value,key){if(key==="password"&&req.path.startsWith("/auth/"))return typeof value==="string"&&value.length<=4096;if(typeof value==="string")return value.length<=12000 && !/[<>\u0000]/.test(value);if(Array.isArray(value))return value.length<=50&&value.every(valid);if(value&&typeof value==="object")return Object.entries(value).every(([name,item])=>valid(item,name));return true;}
+ function valid(value,key){if(key==='expression'&&req.method==='POST'&&['/recruitment/rules','/recruitment/rules/validate'].includes(req.path))return typeof value==='string'&&value.length<=4096&&!/\u0000/.test(value);if(key==="password"&&req.path.startsWith("/auth/"))return typeof value==="string"&&value.length<=4096;if(typeof value==="string")return value.length<=12000 && !/[<>\u0000]/.test(value);if(Array.isArray(value))return value.length<=(req.path==='/recruitment/templates'?512:50)&&value.every(valid);if(value&&typeof value==="object")return Object.entries(value).every(([name,item])=>valid(item,name));return true;}
  if(req.path.endsWith("/portfolio"))return next();
  const textKeys=["name","email","password","role","location","category","bio","availability","eventId","artistId","toId","message","eventName","date","duration","notes","description","token","time","venue","talent","budget","deadline","status"];
  if(!req.body || Array.isArray(req.body) || typeof req.body!=="object")return res.status(400).json({error:"Expected a JSON object."});
@@ -53,6 +58,7 @@ app.use("/api",(req,res,next)=>{
  next();
 });
 app.use(attachUser);
+app.use('/api/recruitment',require('./recruitment/routes').router);
 
 app.get("/api/health", (req, res) => {require("./db").prepare("SELECT 1").get();res.json({ ok: true, database:"sqlite" });});
 app.get("/config.js",(req,res)=>res.type("application/javascript").send(`window.TALENTSPHERE_API_BASE=${JSON.stringify(process.env.PUBLIC_API_BASE || "/api").replace(/</g,"\\u003c")};`));
@@ -90,6 +96,8 @@ module.exports = app;
 if (require.main === module) {
  const PORT = process.env.PORT || 4000;
  require('./platform/outbox').start(app);
+ require('./recruitment/routes').service.ready.then(()=>{
  const server=app.listen(PORT,()=>console.log(`TalentSphere running at http://localhost:${PORT}`));
  server.on("error",err=>{console.error(`Startup failed: ${err.code}. Check PORT and database configuration.`);process.exitCode=1;});
+ }).catch(()=>{console.error('Recruitment initialization failed; startup stopped.');process.exitCode=1;});
 }

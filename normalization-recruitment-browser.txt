@@ -1,0 +1,5 @@
+
+> talentsphere@1.1.0 test:recruitment:browser
+> node scripts/recruitment-browser-test.js
+
+Recruitment browser passed: intake, submission, AST validation, rule activation, enqueue, claim, six-node branching graph, audit verification, mobile layout.

@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),Database=require('../backend/node_modules/better-sqlite3'),{digest}=require('../backend/src/recruitment/audit');
+require('../backend/node_modules/dotenv').config({path:path.resolve('backend/.env'),quiet:true});
+const current=process.env.DATABASE_PATH?path.resolve(process.env.DATABASE_PATH):path.resolve('backend/data.db'),backupDir=path.join(path.dirname(current),'backups');
+const snapshots=fs.readdirSync(backupDir).sort();
+const backup=process.argv[2]||path.join(backupDir,snapshots.find(n=>n.startsWith('before-engine-initialization-'))||snapshots.find(n=>n.startsWith('before-recruitment-v1-')));
+const before=new Database(backup,{readonly:true}),after=new Database(current,{readonly:true}),results=[];
+const jsonAttributes=new Set(['skills','media','details','extras']);
+function rowHash(row){const values={...row};for(const key of jsonAttributes)if(typeof values[key]==='string'){try{values[key]=JSON.parse(values[key]);}catch{/* Plain-text verification notes are not JSON. */}}return digest(values);}
+try{for(const {name}of before.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name").all()){if(!/^\w+$/.test(name))throw new Error('Unsupported identifier');const columns=before.prepare(`PRAGMA table_info(${name})`).all().map(c=>c.name);if(columns.some(c=>!/^\w+$/.test(c)))throw new Error('Unsupported column');const sql=`SELECT ${columns.join(',')} FROM ${name}`,original=before.prepare(sql).all().map(rowHash).sort(),now=after.prepare(sql).all().map(rowHash).sort();results.push({table:name,rows:original.length,preserved:digest(original)===digest(now)});}if(!results.length)throw new Error('Backup has no application tables; refusing a vacuous preservation result');const result={allPreserved:results.every(r=>r.preserved),tableCount:results.length,tables:results};console.log(JSON.stringify(result,null,2));if(!result.allPreserved)process.exitCode=1;}finally{before.close();after.close();}

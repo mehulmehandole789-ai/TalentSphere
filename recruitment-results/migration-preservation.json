@@ -1,0 +1,151 @@
+{
+  "allPreserved": true,
+  "tableCount": 29,
+  "tables": [
+    {
+      "table": "admin_audit",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "applications",
+      "rows": 26,
+      "preserved": true
+    },
+    {
+      "table": "artist_packages",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "artist_profiles",
+      "rows": 9,
+      "preserved": true
+    },
+    {
+      "table": "artist_uploads",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "artist_verifications",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "auth_rate_limits",
+      "rows": 2,
+      "preserved": true
+    },
+    {
+      "table": "availability_blocks",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "booking_messages",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "booking_quotes",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "booking_reads",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "booking_timeline",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "bookings",
+      "rows": 74,
+      "preserved": true
+    },
+    {
+      "table": "collaboration_entries",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "collaboration_posts",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "collaborations",
+      "rows": 26,
+      "preserved": true
+    },
+    {
+      "table": "email_verifications",
+      "rows": 5,
+      "preserved": true
+    },
+    {
+      "table": "events",
+      "rows": 7,
+      "preserved": true
+    },
+    {
+      "table": "moderation_reports",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "notification_outbox",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "notifications",
+      "rows": 16,
+      "preserved": true
+    },
+    {
+      "table": "password_resets",
+      "rows": 1,
+      "preserved": true
+    },
+    {
+      "table": "payment_orders",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "payment_review_log",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "payment_transactions",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "payment_webhook_events",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "reviews",
+      "rows": 3,
+      "preserved": true
+    },
+    {
+      "table": "saved_artists",
+      "rows": 0,
+      "preserved": true
+    },
+    {
+      "table": "users",
+      "rows": 12,
+      "preserved": true
+    }
+  ]
+}

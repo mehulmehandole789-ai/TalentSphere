@@ -11,3 +11,7 @@ backend/.mail-preview/
 
 backend/uploads/
 backend/backups/
+# Temporary PDF reader and recruitment benchmark databases
+.tmp-pdf/
+recruitment-results/*.db*
+recruitment-results/backups/

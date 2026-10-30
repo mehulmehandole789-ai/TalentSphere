@@ -1,0 +1,71 @@
+
+> talentsphere@1.1.0 test
+> npm --prefix backend test
+
+
+> talentsphere-backend@1.0.0 test
+> node --test test/*.test.js
+
+✔ password recovery replaces links, expires, consumes once, preserves verification and revokes sessions (734.5816ms)
+✔ password recovery does not disclose unknown accounts and failed mail invalidates the link (82.8587ms)
+✔ legacy migration never verifies, resets passwords, changes roles, or changes original email (154.0234ms)
+✔ MOCK email: new registration is unverified, no JWT or OTP response, branded HTML and plain text, HMAC storage (131.3837ms)
+✔ incorrect password is generic even when unverified; correct password reveals only the appropriate gate (255.9739ms)
+✔ wrong codes commit attempt counters; valid code is consumed once without auto-login (132.5723ms)
+✔ expiry is server-enforced and resend invalidates the previous code (73.4475ms)
+✔ 60-second cooldown and five-per-hour account resend limit persist in the database (70.151ms)
+✔ five wrong attempts block even the correct code; a rate-limited replacement resets attempts (80.6834ms)
+✔ duplicate registration safely resumes an unverified account without changing its password or profile (191.7248ms)
+✔ concurrent verification consumes exactly one code; concurrent resend emits one replacement (72.0854ms)
+✔ MOCK SMTP failure leaves a recoverable account, never exposes internal error or claims delivery (138.2047ms)
+✔ missing SMTP explicitly fails after saving the account; registration retry does not duplicate it (71.9991ms)
+✔ email verification does not approve accounts, and admin approval does not verify emails (592.8479ms)
+✔ JWT persistence, logout revocation, role permissions, and unverified-token rejection (324.1778ms)
+✔ password symbols/whitespace remain exact and bcrypt truncation cannot accept a suffixed password (445.1733ms)
+✔ registration, verification and resend rate limits are persistent and independent from login (194.5655ms)
+✔ development email preview is rejected outside explicit development mode (11.2647ms)
+✔ LOCAL PREVIEW ONLY writes a branded private email without claiming delivery and its code verifies (97.1588ms)
+✔ MOCK: fixture identities and backend final quote in integer paise (599.6528ms)
+✔ MOCK: only owner can order/read/verify/reconcile/receipt; browser amounts rejected (30.1262ms)
+✔ MOCK: concurrent initiation and retries reuse one provider order (28.7583ms)
+✔ MOCK: invalid signatures, authorization alone, capture verification, receipts and no second charge (36.0641ms)
+✔ MOCK: failed and abandoned sessions, expiry and retry do not prove payment failure (23.5123ms)
+✔ MOCK: raw webhook signatures, duplicate delivery, delayed callback recovery and out-of-order events (34.5381ms)
+✔ MOCK: amount/currency/order mismatches and late cancellation capture require review (56.3184ms)
+✔ MOCK: provider outage retries webhook; interrupted creation recovers by receipt without a second order (25.0384ms)
+✔ MOCK: admin filters and review notes cannot fabricate captures or payouts (21.0161ms)
+✔ MOCK: multiple captures and refunds preserve transaction facts and flag admin review (42.8224ms)
+✔ MOCK: key/mode rotation cannot silently create a second order; no unknown-order remint (24.3063ms)
+✔ stage 1: profile and packages protect ownership, validate links and preserve visibility (236.9969ms)
+✔ stage 1: protected disk uploads validate content and public media respects private profiles (41.5111ms)
+✔ stage 1: availability has consistent offsets, private notes, ranges and owner deletion (14.8907ms)
+✔ stage 2: enquiries do not block each other; quote ownership, totals and concurrent acceptance are enforced (49.9333ms)
+✔ stage 2: verified capture confirms, duplicate webhooks are idempotent and receipts belong to participants (22.5ms)
+✔ stage 2: late captures and conflicting captures enter resolution instead of confirming (28.0197ms)
+✔ stage 3: messages are participant-only, paginated, unread and rate limited (99.391ms)
+✔ stage 3: only completed client bookings can review, one per booking, real aggregate and moderation audit (28.7482ms)
+✔ stage 3: notification email failures leave committed bookings and a retryable outbox (3.6223ms)
+✔ stage 4: collaboration duplicate applications, owner permissions and saved artists (22.303ms)
+✔ simultaneous provider captures cannot confirm overlapping bookings even with historical duplicate holds (37.061ms)
+✔ moderated profiles require admin restoration, verification has records, and admin queries are role protected (25.117ms)
+✔ outdated and expired quotations cannot be accepted and invalid quantities never silently change totals (17.3994ms)
+✔ fresh optional seed is labeled, repeatable and preserves all rows (460.2456ms)
+✔ admin bootstrap creates only the requested account and refuses existing email (862.988ms)
+✔ registration, password hashing, login, persistent identity and admin bypass removal (889.9955ms)
+✔ profile validation, search, media storage, permissions and persistence (32.7997ms)
+✔ portfolio edits, uploads and removals reject another artist identity and preserve both profiles (24.1701ms)
+✔ booking privacy, validation, participant transitions and no simulated payment (37.4361ms)
+✔ event applications privacy, ownership, duplicates and irreversible responses (25.3205ms)
+✔ collaboration recipient authorization and notifications ownership (17.089ms)
+✔ admin protection, verification, suspension revokes sessions, restore and API errors (145.273ms)
+✔ SMTP reset tokens are hashed, single use, expire and revoke existing sessions; logout revokes tokens (215.0129ms)
+✔ malformed input, missing IDs and authentication rate limiting (1439.2533ms)
+✔ seed never changes an existing database and stored records survive reopening (279.8611ms)
+ℹ tests 55
+ℹ suites 0
+ℹ pass 55
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4669.5009
